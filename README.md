@@ -69,7 +69,7 @@ Es gibt kein Loadout mehr. In Koop und Deathmatch hast du alle Waffen dabei, die
 - Im Story-Modus bleibt alles wie vorher (Start mit Pistole, Case Opening nach jedem Level).
 
 
-### 10 neue Waffen (Nr. 18–27)
+### 15 neue Waffen (Nr. 18–32)
 | Waffe | Seltenheit | Besonderheit |
 |---|---|---|
 | Desert Eagle | Selten | schwere Pistole, 48 Schaden |
@@ -82,6 +82,11 @@ Es gibt kein Loadout mehr. In Koop und Deathmatch hast du alle Waffen dabei, die
 | Kreissäge | Legendär | Sägeblatt fliegt hin und zurück und schneidet durch alle |
 | Molotow | Episch | setzt den Boden 5 Sekunden in Brand |
 | Taubenwerfer | ULTRA | Tauben suchen sich selbst ein Ziel und explodieren |
+| Harpune | Episch | 90 Schaden, durchbohrt alle Gegner in einer Linie |
+| Raketenschwarm | Legendär | 4 Mini-Raketen pro Schuss, suchen selbst ein Ziel |
+| Schwarzes Loch | ULTRA | Kugel bleibt stehen, zieht alle Gegner rein und explodiert |
+| Shuriken | Selten | 3 Wurfsterne im Fächer, schneiden durch Gegner |
+| Lasergewehr | Legendär | Dauerstrahl, trifft alle Gegner in der Linie |
 
 ### Skinkiste (120 Coins)
 Gibt Skins für Waffen, die du schon besitzt. Rein optisch, gilt in allen Modi. Ein neuer Skin wird sofort ausgerüstet. Im Inventar auf eine Waffe klicken, dann kannst du den Skin wechseln oder auf Standard zurück.

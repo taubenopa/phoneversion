@@ -30,7 +30,7 @@ const CHARS=[['taubenopa','taubenopa','Taubenwächter',20],['EuroJunkie','euroju
 const SPEC_CD=15;   // Ersatzwert, falls ein Charakter keine Abklingzeit hat
 // Case Opening: welche Waffen (Index in WP) nach welchem Level in der Kiste sein koennen
 const CASEP=[null,[2,8,3,14],[2,8,3,9,11,14,13],[2,8,3,9,11,5,10,7,13,15],[3,9,11,5,10,7,4,12,13,15,16],[5,10,7,4,12,6,15,16]];
-const RAR={2:0,8:0,14:0,3:1,9:1,11:1,13:1,5:2,10:2,7:2,15:2,4:3,12:3,16:3,6:4,17:1,18:1,21:1,19:2,20:2,23:2,25:2,22:3,24:3,26:4},RARC=['#4b69ff','#8847ff','#d32ce6','#eb4b4b','#ffd700'],RARN=['Gewöhnlich','Selten','Episch','Legendär','ULTRA'];
+const RAR={2:0,8:0,14:0,3:1,9:1,11:1,13:1,5:2,10:2,7:2,15:2,4:3,12:3,16:3,6:4,17:1,18:1,21:1,19:2,20:2,23:2,25:2,22:3,24:3,26:4,27:2,28:3,29:4,30:1,31:3},RARC=['#4b69ff','#8847ff','#d32ce6','#eb4b4b','#ffd700'],RARN=['Gewöhnlich','Selten','Episch','Legendär','ULTRA'];
 // Slimes Sprueche: intro = vor Level 1, 1-5 = nach dem jeweiligen Level, 6 = Ende
 const DLG={
  intro:['Yo. Ich bin\'s. Slimee Rebel.',

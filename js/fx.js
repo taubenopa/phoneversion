@@ -2,14 +2,14 @@
 // ================= WAFFENSOUNDS (assets/sfx/*.wav) =================
 // SFXV = Lautstaerke pro Waffe. Datei tauschen = Sound tauschen.
 const SFXF={1:'pistol',2:'shotgun',3:'mg',4:'rocket',5:'plasma',6:'bfg',7:'sniper',8:'revolver',9:'flame',10:'grenade',11:'blitz',12:'rail',13:'mg',14:'pistol',16:'mg',
- 17:'revolver',18:'shotgun',19:'mg',20:'sniper',21:'mg',22:'blitz',23:'plasma',24:'rail',25:'grenade',26:'rocket'};
-const SFXR={13:.78,14:1.4,16:1.25,17:.78,18:.82,19:.8,20:1.35,21:1.15,22:.7,23:1.7,24:1.9,25:1.25,26:1.4};   // Tonhoehe (gleiches Sample, anderer Klang)
-const SFXV={1:.55,2:.8,3:.42,4:.75,5:.4,6:.9,7:.85,8:.7,9:.5,10:.7,11:.55,12:.85,13:.55,14:.36,16:.34,17:.75,18:.95,19:.42,20:.6,21:.42,22:.6,23:.16,24:.38,25:.55,26:.55};
+ 17:'revolver',18:'shotgun',19:'mg',20:'sniper',21:'mg',22:'blitz',23:'plasma',24:'rail',25:'grenade',26:'rocket',27:'rail',28:'rocket',29:'bfg',30:'rail',31:'plasma'};
+const SFXR={13:.78,14:1.4,16:1.25,17:.78,18:.82,19:.8,20:1.35,21:1.15,22:.7,23:1.7,24:1.9,25:1.25,26:1.4,27:.6,28:1.7,29:1.4,30:2.4,31:1.3};   // Tonhoehe (gleiches Sample, anderer Klang)
+const SFXV={1:.55,2:.8,3:.42,4:.75,5:.4,6:.9,7:.85,8:.7,9:.5,10:.7,11:.55,12:.85,13:.55,14:.36,16:.34,17:.75,18:.95,19:.42,20:.6,21:.42,22:.6,23:.16,24:.38,25:.55,26:.55,27:.5,28:.4,29:.55,30:.22,31:.18};
 const SFX={};let sfxOn=0,flameSrc=null,flameGain=null,flameT=0;
 function sfxInit(){
  if(sfxOn)return;sfxOn=1;try{ac()}catch(e){}
  for(const w in SFXF){const url='assets/sfx/'+SFXF[w]+'.wav',o=SFX[w]={buf:null,pool:[],k:0};
-  for(let i=0;i<(w==3||w==5||w==19||w==21||w==23?6:w==9?1:3);i++){const a=new Audio(url);a.preload='auto';if(w==9)a.loop=true;o.pool.push(a)}
+  for(let i=0;i<(w==3||w==5||w==19||w==21||w==23||w==31?6:w==9?1:3);i++){const a=new Audio(url);a.preload='auto';if(w==9)a.loop=true;o.pool.push(a)}
   // Web Audio (ohne Verzoegerung); klappt das Laden nicht (z.B. Doppelklick auf index.html), spielen die Audio-Elemente oben
   try{fetch(url).then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(b=>{o.buf=b}).catch(()=>{})}catch(e){}}
 }
@@ -30,7 +30,7 @@ function flameTick(dt){ // Flammenwerfer laeuft als Schleife, solange geschossen
 
 // ================= GESCHOSSE UND EXPLOSIONEN (vorgerenderte Bilder) =================
 // Rauch-/Funkenspur pro Geschoss-Typ: [Menge, Farben, Lebensdauer, Hoehe, Auftrieb, Schwerkraft, Groesse]
-const TRL={77:[.6,['#ffd27a','#fff','#bbb'],.18],78:[1,['#ff7a1a','#ffd36a','#555'],.35,.5,.3,0,.05],3:[.9,['#bbb','#888','#fa3'],.5,.42,.3,0,.05],4:[.5,['#4ef','#aff'],.2],12:[1,['#6f6','#cfc','#3a3'],.4,.42,.2,0,.06],18:[.4,['#888','#665'],.3],
+const TRL={79:[1.2,['#7b2ff7','#c9a0ff','#120321'],.4,.5,.1,0,.07],81:[.3,['#ddd','#fff'],.12],77:[.6,['#ffd27a','#fff','#bbb'],.18],78:[1,['#ff7a1a','#ffd36a','#555'],.35,.5,.3,0,.05],3:[.9,['#bbb','#888','#fa3'],.5,.42,.3,0,.05],4:[.5,['#4ef','#aff'],.2],12:[1,['#6f6','#cfc','#3a3'],.4,.42,.2,0,.06],18:[.4,['#888','#665'],.3],
  2:[.6,['#f80','#fd3','#f42'],.25],72:[.4,['#ddd','#aaa'],.2,.48],60:[.3,['#fff','#ccd'],.3],75:[.6,['#d22','#fff','#1e4fd6'],.3],76:[.6,['#d22','#fff','#1e4fd6'],.3],74:[.8,['#ff3ea5','#2de2e6','#ffe22e','#9b5cff'],.35],73:[.35,['#f6c838','#c98a3a','#4caf3a'],.3],70:[.5,['#ff4455','#ffb3ba'],.3],68:[.5,['#ffe45c','#fff7c2'],.25],69:[.9,['#ff5a5a','#fff'],.12,.52],62:[.8,['#7b2ff7','#c9a0ff','#1a0b2e'],.3],63:[.5,['#6b3a1a','#fff'],.3],65:[.25,['#8fc98a','#e8d06a'],.35],66:[.4,['#dde','#99a'],.2],24:[.7,['#555','#f80','#333'],.4,.5,.4],29:[.6,['#6f4','#3a2'],.35],37:[.7,['#8cf','#fff'],.15],36:[.3,['#f6c','#fbd'],.3],23:[.3,['#a4f','#d9f'],.25]};
 (function(){
  const mk=(n,f,N)=>{const fr=[];for(let k=0;k<(N||1);k++){const c=document.createElement('canvas');c.width=c.height=n;const g=c.getContext('2d');g.translate(n/2,n/2);f(g,n/2,k/(N||1),k);fr.push(c)}return fr};
@@ -95,6 +95,9 @@ const TRL={77:[.6,['#ffd27a','#fff','#bbb'],.18],78:[1,['#ff7a1a','#ffd36a','#55
   g.fillStyle='#c9ced6';g.beginPath();g.arc(0,0,r*.5,0,7);g.fill();g.fillStyle='#5b6068';g.beginPath();g.arc(0,0,r*.14,0,7);g.fill();g.strokeStyle='#e8ecf2';g.lineWidth=1.5;g.beginPath();g.arc(0,0,r*.36,-.5,1.2);g.stroke()},8));
  fx(78,.3,.5,mk(32,(g,r,u)=>{g.rotate(u*6.28);g.fillStyle='#2f6b36';g.beginPath();g.roundRect(-r*.2,-r*.15,r*.4,r*.7,r*.08);g.fill();g.fillRect(-r*.08,-r*.45,r*.16,r*.32);g.fillStyle='#6fb37a';g.fillRect(-r*.14,-r*.1,r*.06,r*.5);
   g.fillStyle='#e8dcc0';g.fillRect(-r*.1,-r*.6,r*.2,r*.17);g.translate(0,-r*.62);glow(g,r*.4,['#ffd36aee','#ff7a1a88','#ff3a0000'])},8));
+ // 79 Schwarzes Loch (wirbelnde Kugel), 81 Wurfstern
+ fx(79,.6,.5,mk(48,(g,r,u)=>{glow(g,r,['#000000ff','#1a0533ff','#7b2ff7aa','#b45cff00']);g.rotate(u*6.28);g.strokeStyle='#c9a0ff';g.lineWidth=2;for(let k=0;k<3;k++){g.rotate(2.094);g.beginPath();g.arc(0,0,r*.55,0,1.4);g.stroke()}g.fillStyle='#000';g.beginPath();g.arc(0,0,r*.3,0,7);g.fill()},8));
+ fx(81,.22,.48,mk(32,(g,r,u)=>{g.rotate(u*6.28);g.fillStyle='#c9ced6';g.beginPath();for(let k=0;k<8;k++){const a=k/8*6.283,q=k&1?r*.25:r*.8;g.lineTo(Math.cos(a)*q,Math.sin(a)*q)}g.closePath();g.fill();g.fillStyle='#3a3e46';g.beginPath();g.arc(0,0,r*.12,0,7);g.fill()},8));
  // 72 Armbrust-Bolzen
  fx(72,.26,.48,mk(32,(g,r,u)=>{g.rotate(u*6.28);g.fillStyle='#5a3a1e';g.beginPath();g.arc(0,0,r*.22,0,7);g.fill();for(let k=0;k<3;k++){g.rotate(2.094);g.fillStyle=k?'#f2efe8':'#d8242c';g.beginPath();g.moveTo(0,-r*.15);g.lineTo(r*.85,-r*.05);g.lineTo(r*.85,r*.12);g.lineTo(0,r*.12);g.fill()}g.fillStyle='#cfd5dc';g.beginPath();g.arc(0,0,r*.1,0,7);g.fill()},6),{fps:18});
  // 73 Burger (Muro)
@@ -181,8 +184,8 @@ const WIMG=[],WMZ=[];   // WMZ = Muendung [x,y] relativ zur Bildmitte unten (fue
 })();
 // Zustand der Waffen-Animation. ak = wie weit gezielt wird (0 = Huefte, 1 = Kimme und Korn), mx/my = Muendung auf dem Bildschirm, sc = Zielfernrohr aktiv
 const VM={w:1,sw:1,sx:0,sy:0,la:0,lp:0,ak:0,sc:0,mx:VW/2+90,my:VH-60};
-const WKICK=[26,7,16,4,18,3,22,20,11,1.5,13,6,20,6,3,12,2.5,16,24,4.5,13,7,10,1.5,12,8,14],WROT=[0,.05,.1,.02,.07,.015,.09,.1,.09,.008,.07,.03,.09,.03,.02,.06,.01,.09,.12,.02,.05,.03,.04,.008,.06,.05,.06];
-const FLR=[0,15,30,17,28,18,38,26,20,0,22,18,30,20,13,0,22,25,36,21,22,18,20,0,0,0,14];   // Groesse Muendungsfeuer
+const WKICK=[26,7,16,4,18,3,22,20,11,1.5,13,6,20,6,3,12,2.5,16,24,4.5,13,7,10,1.5,12,8,14,20,14,22,6,.8],WROT=[0,.05,.1,.02,.07,.015,.09,.1,.09,.008,.07,.03,.09,.03,.02,.06,.01,.09,.12,.02,.05,.03,.04,.008,.06,.05,.06,.1,.07,.1,.04,.004];
+const FLR=[0,15,30,17,28,18,38,26,20,0,22,18,30,20,13,0,22,25,36,21,22,18,20,0,0,0,14,0,18,26,0,10];   // Groesse Muendungsfeuer
 const SCOPED={7:1,12:1,20:1};
 // Die Waffe selbst wird in js/vm.js als 3D-Modell gezeichnet (drawWeapon). WIMG oben dient nur noch als Symbol in Shop und Case Opening.
 // Zielfernrohr (Sniper, Railgun)

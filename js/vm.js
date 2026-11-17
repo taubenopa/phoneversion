@@ -158,6 +158,26 @@ function model(w,now,P){
    const zf=B.mz[2]-.02;cb(L,0,.03,zf,.05,.05,.07,'#cfd2da','p',.012);cb(L,0,.06,zf+.03,.034,.034,.04,'#9aa0ac','p',.008);box(L,0,.055,zf+.06,.012,.008,.02,'#ff9a2e','p');
    for(const s of[-1,1]){box(L,s*.012,.068,zf+.045,.006,.006,.002,'#111','p');box(L,s*.014,.072,zf+.034,.004,.004,.004,'#4cd18a','e')}
    for(let i=0;i<3;i++)box(L,.058,.03,-.1+i*.08,.002,.03,.03,'#9b5cff','p');break}
+  case 27:{   // Harpune: Rohr mit eingelegtem Speer
+   cyl(L,0,.02,-.2,.03,.5,'#2e4558','m',14);cb(L,0,-.01,-.16,.05,.05,.18,'#1d2a36','m',.008);for(const z of[-.05,.15])cyl(L,0,.02,z,.034,.02,'#c9a13a','m',14);
+   cyl(L,0,.06,-.15,.006,.62,'#cfd5dc','m',8);cyl(L,0,.06,.47,.014,.0,'#e8ecf2','m',8);cyl(L,0,.06,.45,.012,.02,'#9aa1aa','m',8,.014);for(const s of[-1,1])beam(L,[s*.004,.06,.44],[s*.022,.06,.4],.004,.004,'#9aa1aa','m');
+   beam(L,[0,-.02,-.02],[0,-.095,-.05],.03,.048,'#1d2a36','p',1);tguard(L,-.05);rhand(L);lhand(L,[0,-.004,.18]);mz=[0,.06,.5];sY=.08;break}
+  case 28:{   // Raketenschwarm: Kasten mit 4 Rohren
+   cb(L,0,.03,-.12,.075,.075,.4,'#4a5160','m',.012);for(const a of[-1,1])for(const b of[-1,1]){cyl(L,a*.018,.03+b*.018,.08,.014,.01,'#1d1f22','m',10);cyl(L,a*.018,.03+b*.018,.085,.009,.002,'#ff5a2e','e',8)}
+   cb(L,0,.08,-.08,.024,.024,.1,'#2a2c31','m');cyl(L,0,.08,-.03,.008,.002,'#59ff8a','l',8);for(let i=0;i<4;i++)box(L,.039,.03,-.26+i*.07,.002,.04,.03,'#ffb02e','p');
+   beam(L,[0,-.02,-.1],[0,-.11,-.13],.03,.05,'#2a2c31','p',1);tguard(L,-.12);rhand(L,-.05);lhand(L,[-.02,-.02,.0]);mz=[0,.03,.09];sY=.1;break}
+  case 29:{const pu=.6+.4*Math.sin(now*.006);   // Schwarzes Loch: Sci-Fi-Waffe mit violetter Kugel
+   cb(L,0,.0,-.12,.07,.08,.34,'#1b1c22','m',.015);cyl(L,0,.01,.06,.05,.14,'#2a2b33','m',16);for(const z of[.08,.12,.16])cyl(L,0,.01,z,.055,.008,'#7b2ff7','e',16);
+   cyl(L,0,.01,.21,.035,.03,'#000','m',14);cyl(L,0,.01,.24,.02*pu+.01,.006,'#c9a0ff','e',12);for(const s of[-1,1])beam(L,[s*.04,.04,-.05],[s*.04,.03,.2],.008,.008,'#7b2ff7','e');
+   beam(L,[0,-.03,-.06],[0,-.11,-.09],.032,.05,'#1b1c22','p',1);tguard(L,-.08);rhand(L,-.06);lhand(L,[0,-.04,.12]);mz=[0,.01,.25];sY=.07;break}
+  case 30:{   // Shuriken-Werfer am Handgelenk, Stern liegt oben
+   cb(L,0,-.02,-.05,.07,.05,.22,'#2a2c31','m',.01);cb(L,0,.012,.02,.06,.016,.14,'#3a3e46','m',.004);for(let k=0;k<4;k++){const a=k/4*6.283+.4;beam(L,[0,.03,.07],[Math.cos(a)*.06,.03,.07+Math.sin(a)*.06],.016,.004,'#d9dde3','m')}cyl(L,0,.03,.07,.016,.006,'#c9ced6','m',8);
+   cyl(L,0,.028,.06,.006,.004,'#3a3e46','m',8);for(let i=0;i<3;i++)box(L,.036,-.02,-.12+i*.04,.002,.02,.02,'#d8242c','p');rhand(L,-.07);mz=[0,.03,.12];sY=.03;az=.3;break}
+  case 31:{   // Lasergewehr: weiss mit roten Leuchtlinien
+   cb(L,0,.02,-.14,.055,.075,.48,'#e8eaee','p',.016);cb(L,0,.065,-.08,.04,.02,.3,'#cfd3da','p',.008);for(const s of[-1,1])box(L,s*.0285,.02,-.1,.002,.008,.34,'#ff2a2a','e');
+   cyl(L,0,.02,.12,.016,.2,'#2a2c31','m',12);for(const z of[.16,.22,.28])cyl(L,0,.02,z,.022,.008,'#ff2a2a','e',12);cyl(L,0,.02,.32,.01,.004,'#ffd0d0','e',10);
+   cb(L,0,.1,-.05,.03,.025,.07,'#1d1f22','m',.004);cyl(L,0,.105,-.015,.009,.002,'#ff3b3b','e',8);beam(L,[0,-.01,-.02],[0,-.09,-.05],.028,.048,'#2a2c31','p',1);
+   tguard(L,-.05);rhand(L);lhand(L,[0,-.012,.16]);mz=[0,.02,.33];sY=.105;break}
  }
  return{L,mz,sY,az};
 }
@@ -195,7 +215,7 @@ function drawWeapon(P,now){
  VM.sx+=(Math.max(-14,Math.min(14,-da*260))-VM.sx)*Math.min(1,dt*9);VM.sy+=(Math.max(-10,Math.min(10,dp*1.6))-VM.sy)*Math.min(1,dt*9);
  if(P.hp<=0)return;
  if(VM.sc){drawScope(now);return}
- const M=(w==0||w==16||w==24||w==25)?model(w,now,P):(MP[w]||(MP[w]=model(w,now,P)));
+ const M=(w==0||w==16||w==24||w==25||w==29)?model(w,now,P):(MP[w]||(MP[w]=model(w,now,P)));
  const k=rec*rec,calm=1-.85*ae,sink=(1-VM.sw)*(1-VM.sw),air=me.z>0?Math.max(-1,Math.min(1,-(me.vz||0)*.12)):0;
  const kick=(WKICK[w]||0)/20;
  const T={
@@ -209,7 +229,7 @@ function drawWeapon(P,now){
  const gl=(c,r,a,px,py)=>{px=px==null?m[0]:px;py=py==null?m[1]:py;const q=x.createRadialGradient(px,py,0,px,py,r);q.addColorStop(0,c);q.addColorStop(1,'rgba(0,0,0,0)');x.globalAlpha=a;x.globalCompositeOperation='lighter';x.fillStyle=q;x.beginPath();x.arc(px,py,r,0,7);x.fill();x.globalAlpha=1;x.globalCompositeOperation='source-over'};
  if(w==5)gl('#3df',10+Math.sin(now*9)*2,.5);if(w==6)gl('#5f5',16+Math.sin(now*6)*4,.55);if(w==12)gl('#3cf',8+Math.sin(now*8)*2,.45);if(w==11)gl('#6cf',7,.45);
  if(w==9){const h=4+Math.random()*3;x.fillStyle='#fa2';x.beginPath();x.moveTo(m[0]-2,m[1]);x.quadraticCurveTo(m[0]+(Math.random()-.5)*3,m[1]-h,m[0]+2,m[1]);x.fill()}
- if(fl>0&&FLR[w])flash(w,w==5?'#3df':w==6?'#5f5':w==11||w==22?'#6cf':w==12?'#3cf':'#ffb347',mzp,M,T);
+ if(fl>0&&FLR[w])flash(w,w==5?'#3df':w==6?'#5f5':w==11||w==22?'#6cf':w==12?'#3cf':w==29?'#b45cff':w==31?'#ff3b3b':'#ffb347',mzp,M,T);
 }
 
 // Muendungsfeuer: sitzt VOR dem Lauf und schiesst nach vorne raus (Flammenkegel + seitliche Zacken + Leuchten), jedes Mal etwas anders

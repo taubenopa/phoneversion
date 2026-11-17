@@ -122,12 +122,18 @@ const WP=[
  {nm:'FROSTWERFER',cd:.06,d:3.5,n:3,sp:.28,rg:5,am:1,fr:1},
  {nm:'KREISSÄGE',cd:.7,pr:77,v:13,am:1,l:2,bm:1,pd:22},
  {nm:'MOLOTOW',cd:.9,pr:78,v:9,am:1,l:1,mo:1},
- {nm:'TAUBENWERFER',cd:.55,pr:60,v:11,am:1,l:3,hm:1,ex:2.2,xd:70}];
-const ALLW=(1<<WP.length)-1;   // Bitmaske "alle Waffen"
-const SN=['FAUST','PISTOLE','SHOTGUN','MG','RAKETE','PLASMA','BFG','SNIPER','REVOLVER','FLAMME','GRANATE','BLITZ','RAIL','AK','UZI','ARMBRUST','MINIGUN','DEAGLE','DOPPELLAUF','LMG','DMR','BURST','TESLA','FROST','SÄGE','MOLOTOW','TAUBEN'],
- DS=['','unendlich Munition','8 Schrot, nah stark','schnelles Dauerfeuer','Flächenschaden','schneller Strahl','riesige Explosion','1 Schuss, 90 Schaden','langsam, hart','kurze Reichweite','explodiert nach Flug','springt auf Gegner über','durchschlägt alle','präzise beim Zielen','sehr schnell, streut','Bolzen durchschlägt Gegner','muss erst anlaufen','schwere Pistole, hoher Schaden','14 Schrot, verheerend aus der Nähe','riesiges Magazin','halbautomatisch, Zielfernrohr','3 Schüsse pro Abzug','Blitz springt auf Gegner über','friert Gegner ein (langsam)','Säge fliegt hin und zurück, schneidet durch','setzt den Boden in Brand','Tauben suchen sich ihr Ziel'];
+ {nm:'TAUBENWERFER',cd:.55,pr:60,v:11,am:1,l:3,hm:1,ex:2.2,xd:70},
+ // ---- 5 weitere (27-31) ----
+ {nm:'HARPUNE',cd:1.3,pr:72,v:22,am:1,l:2,pd:90},
+ {nm:'RAKETENSCHWARM',cd:1.1,pr:3,v:10,am:1,l:3,hm:1,ex:1.5,xd:45,pn:4,ps:.5},
+ {nm:'SCHWARZES LOCH',cd:2.4,pr:79,v:7,am:1,l:2.4,gv:1,ex:3.4,xd:160},
+ {nm:'SHURIKEN',cd:.38,pr:81,v:18,am:1,l:1.4,pd:16,pn:3,ps:.22},
+ {nm:'LASERGEWEHR',cd:.05,d:6,n:1,sp:0,rg:30,am:1,pi:1}];
+const ALLW=WP.length>=32?-1:(1<<WP.length)-1;   // Bitmaske "alle Waffen" (32 Waffen = alle 32 Bits)   // Bitmaske "alle Waffen"
+const SN=['FAUST','PISTOLE','SHOTGUN','MG','RAKETE','PLASMA','BFG','SNIPER','REVOLVER','FLAMME','GRANATE','BLITZ','RAIL','AK','UZI','ARMBRUST','MINIGUN','DEAGLE','DOPPELLAUF','LMG','DMR','BURST','TESLA','FROST','SÄGE','MOLOTOW','TAUBEN','HARPUNE','SCHWARM','LOCH','SHURIKEN','LASER'],
+ DS=['','unendlich Munition','8 Schrot, nah stark','schnelles Dauerfeuer','Flächenschaden','schneller Strahl','riesige Explosion','1 Schuss, 90 Schaden','langsam, hart','kurze Reichweite','explodiert nach Flug','springt auf Gegner über','durchschlägt alle','präzise beim Zielen','sehr schnell, streut','Bolzen durchschlägt Gegner','muss erst anlaufen','schwere Pistole, hoher Schaden','14 Schrot, verheerend aus der Nähe','riesiges Magazin','halbautomatisch, Zielfernrohr','3 Schüsse pro Abzug','Blitz springt auf Gegner über','friert Gegner ein (langsam)','Säge fliegt hin und zurück, schneidet durch','setzt den Boden in Brand','Tauben suchen sich ihr Ziel','riesiger Schaden, durchbohrt alles','4 Mini-Raketen suchen Ziele','zieht Gegner an, dann Explosion','3 Wurfsterne, durchschlagen Gegner','Dauerstrahl durch alle Gegner'];
 const owned=lo=>WP.map((_,i)=>i).filter(i=>lo>>i&1),firstW=lo=>{const L=owned(lo);return L.length>1?L[1]:0};
-const MX=[0,0,50,200,25,200,10,20,60,300,20,80,12,180,300,30,400,35,30,400,60,90,50,300,20,12,20],AM0=()=>[0,0,8,40,3,50,0,5,24,100,5,30,3,60,90,10,150,14,8,150,20,30,15,100,6,4,6];
+const MX=[0,0,50,200,25,200,10,20,60,300,20,80,12,180,300,30,400,35,30,400,60,90,50,300,20,12,20,15,40,6,120,300],AM0=()=>[0,0,8,40,3,50,0,5,24,100,5,30,3,60,90,10,150,14,8,150,20,30,15,100,6,4,6,5,12,2,40,100];
 // ---------- Zustand (Host simuliert) ----------
 const players=[0,1,2,3].map(i=>({i,on:i==0,x:SP[i][0],y:SP[i][1],a:A0[i],al:true,hp:100,w:1,lo:63,f:0,cd:0,rt:0,sc:0,rc:0,ar:0,am:AM0()}));
 let E=[],J=[],PK=[],NJ=[],wave=0,toSpawn=0,spawnT=0,waitT=3,S=null,mode=0,id=0,me=players[0];
@@ -171,7 +177,7 @@ function fire(p){
  if(w.su&&!(p.spn>=1)){p.cd=0;return}
  if(w.am&&p.am[p.w]<=0){p.cd=.3;return}
  if(w.am)p.am[p.w]--;p.cd=w.cd*(p.ua>0&&p.uk==1?.62:1);
- if(w.pr){J.push({x:p.x+Math.cos(p.a)*.4,y:p.y+Math.sin(p.a)*.4,vx:Math.cos(p.a)*w.v,vy:Math.sin(p.a)*w.v,t:w.pr,o:p.i,l:w.l||3,pd:w.pd,pc:w.pd?1:0,rr:w.pd?(w.bm?.22:.15):0,bm:w.bm,mo:w.mo,hm:w.hm,ex:w.ex,xd:w.xd});return}
+ if(w.pr){const n=w.pn||1;for(let k=0;k<n;k++){const a=p.a+(n>1?(k/(n-1)-.5)*w.ps:0);J.push({x:p.x+Math.cos(a)*.4,y:p.y+Math.sin(a)*.4,vx:Math.cos(a)*w.v,vy:Math.sin(a)*w.v,t:w.pr,o:p.i,l:w.l||3,pd:w.pd,pc:w.pd?1:0,rr:w.pd?(w.bm?.22:.15):0,bm:w.bm,mo:w.mo,hm:w.hm,ex:w.ex,xd:w.xd,gv:w.gv})}return}
  if(w.bu){p.bq=w.bu-1;p.bt=.07}
  const sp=w.sp*((p.ads||p.ad)?(w.ads!=null?w.ads:.3):1);   // beim Zielen genauer
  for(let k=0;k<w.n;k++)shoot(p,p.a+(Math.random()-.5)*sp*2,w);
@@ -257,11 +263,14 @@ function sim(dt){
   if(j.t==29){let tp=null,bd=9;for(const p of players)if(p.on&&p.al){const d=Math.hypot(p.x-j.x,p.y-j.y);if(d<bd){bd=d;tp=p}}   // Giftschaedel verfolgt
    if(tp){const v=Math.hypot(j.vx,j.vy),a=Math.atan2(j.vy,j.vx);let da=Math.atan2(tp.y-j.y,tp.x-j.x)-a;da=Math.atan2(Math.sin(da),Math.cos(da));const na=a+Math.max(-1.5*dt,Math.min(1.5*dt,da));j.vx=Math.cos(na)*v;j.vy=Math.sin(na)*v}}
   else if(j.t==36){j.w=(j.w||0)+dt*8;const v=Math.hypot(j.vx,j.vy)||1,k=Math.cos(j.w)*2.4*dt;j.x-=j.vy/v*k;j.y+=j.vx/v*k}   // Musiknoten fliegen in Schlangenlinie
+  if(j.gv){j.bt=(j.bt||0)+dt;if(j.bt>.7){const k=Math.pow(.04,dt);j.vx*=k;j.vy*=k}   // Schwarzes Loch: fliegt kurz, bleibt stehen, zieht alles an
+   for(const e of E){if(e.dead||isBoss(e))continue;const dx=j.x-e.x,dy=j.y-e.y,d=Math.hypot(dx,dy);if(d<5.5&&d>.25)move(e,dx/d,dy/d,dt*Math.min(6,9*(1-d/6)))}
+   if(j.l<.05){boom(j);shk=Math.max(shk,4);return false}}
   if(j.hm){let tg=null,bd=9;for(const e of E)if(!e.dead){const d=Math.hypot(e.x-j.x,e.y-j.y);if(d<bd){bd=d;tg=e}}if(dm)for(const q of players)if(q.on&&q.al&&q.i!==j.o){const d=Math.hypot(q.x-j.x,q.y-j.y);if(d<bd){bd=d;tg=q}}
    if(tg){const v=Math.hypot(j.vx,j.vy),a=Math.atan2(j.vy,j.vx);let da=Math.atan2(tg.y-j.y,tg.x-j.x)-a;da=Math.atan2(Math.sin(da),Math.cos(da));const na=a+Math.max(-4*dt,Math.min(4*dt,da));j.vx=Math.cos(na)*v;j.vy=Math.sin(na)*v}}
   j.x+=j.vx*dt;j.y+=j.vy*dt;j.l-=dt;let hit=(!j.back&&wl(j.x,j.y))||j.l<=0;
   if(j.o<0){for(const p of players)if(p.on&&p.al&&!(p.z>.25&&j.t!=24)&&Math.hypot(p.x-j.x,p.y-j.y)<.4){hurtP(p,j.d||12);hit=1}}
-  else for(const e of E)if(!e.dead&&!(e.br>0)&&Math.hypot(e.x-j.x,e.y-j.y)<e.r+(j.rr||.1)){if(j.pc){if((j.hs=j.hs||[]).includes(e.id))continue;j.hs.push(e.id);hurtE(e,j.pd,j.o);if(j.br)bribe(e,j.o);continue}if(j.pd)hurtE(e,j.pd,j.o);else if(j.t==4)hurtE(e,16,j.o);hit=1;break}
+  else if(!j.gv)for(const e of E)if(!e.dead&&!(e.br>0)&&Math.hypot(e.x-j.x,e.y-j.y)<e.r+(j.rr||.1)){if(j.pc){if((j.hs=j.hs||[]).includes(e.id))continue;j.hs.push(e.id);hurtE(e,j.pd,j.o);if(j.br)bribe(e,j.o);continue}if(j.pd)hurtE(e,j.pd,j.o);else if(j.t==4)hurtE(e,16,j.o);hit=1;break}
   if(dm&&j.o>=0)for(const q of players)if(q.on&&q.al&&q.i!==j.o&&Math.hypot(q.x-j.x,q.y-j.y)<.4){if(j.pd)hitP(q,j.pd*.5,j.o);else if(j.t==4)hitP(q,16,j.o);hit=1}
   if(hit&&j.bb){if(sol(j.x,j.y)){j.x-=j.vx*.06;j.y-=j.vy*.06}bigBoom(j.x,j.y,j.o);return false}   // Bilderbombe
   if(hit&&j.gf){if(sol(j.x,j.y)){j.x-=j.vx*.06;j.y-=j.vy*.06}graffiti(j.x,j.y,j.o);return false}   // Graffiti-Schuss
@@ -275,7 +284,7 @@ function sim(dt){
 let AC,mst,nb,muted=0,paused=0,hm=0,shk=0;const TR=[],PT=[];
 // ---------- Schuss-Spuren (Tracer) in 3D ----------
 // Stil je Waffe: [Kernfarbe, Leuchtfarbe r,g,b, Breite, Tempo (Felder/s), Laenge der Spur, Nachleuchten in s, Art]
-const TRS={1:['#fff6d0','255,190,80',1.4,260,2.4,0],2:['#ffe6b0','255,170,70',1,280,1.6,0],3:['#fff3b8','255,175,60',1.4,300,2.6,0],7:['#ffffff','170,220,255',2,420,6,.35],
+const TRS={31:['#ffd0d0','255,40,40',1.6,0,0,.07,'r'],1:['#fff6d0','255,190,80',1.4,260,2.4,0],2:['#ffe6b0','255,170,70',1,280,1.6,0],3:['#fff3b8','255,175,60',1.4,300,2.6,0],7:['#ffffff','170,220,255',2,420,6,.35],
  8:['#fff0c0','255,200,90',1.8,260,2.6,.06],11:['#e8fbff','90,200,255',1.8,0,0,.15,'z'],12:['#ffffff','70,230,255',2.4,0,0,.45,'r'],13:['#ffe9a0','255,185,70',1.5,300,2.6,0],
  14:['#fff1b5','255,200,90',1.3,290,2,0],16:['#ffd480','255,150,40',1.5,320,2.6,0],
  17:['#fff0c0','255,200,90',2,270,2.8,.06],18:['#ffe6b0','255,170,70',1,270,1.5,0],19:['#fff3b8','255,175,60',1.5,300,2.6,0],20:['#ffffff','190,225,255',1.7,380,4,.2],
@@ -330,7 +339,7 @@ function click(){tone(900,650,.03,'square',.08)}
 function hurtSnd(){tone(150,45,.22,'sawtooth',.4);nz(.14,'lowpass',1300,200,.4)}
 function jingle(b){if(b){tone(110,95,.6,'sawtooth',.3);tone(104,88,.6,'sawtooth',.18,.15);nz(.6,'lowpass',700,90,.4)}else{tone(440,440,.1,'square',.1);tone(660,660,.16,'square',.1,.1)}}
 function spark(n,c){for(let k=0;k<n;k++){const a=Math.random()*6.28,s=40+Math.random()*90;PT.push({x:VW/2,y:VH/2,vx:Math.cos(a)*s,vy:Math.sin(a)*s-20,g:200,l:.2+Math.random()*.2,c:c||'#fd6'})}}
-function shotFx(w){shk=Math.max(shk,([0,.6,2.4,.8,2.2,.3,3.6,3,1.4,.3,1.8,.6,3.2,1,.5,1.3,.6,2.2,4,1,2,1.1,1.4,.3,1.2,.8,1.6][w]||0));
+function shotFx(w){shk=Math.max(shk,([0,.6,2.4,.8,2.2,.3,3.6,3,1.4,.3,1.8,.6,3.2,1,.5,1.3,.6,2.2,4,1,2,1.1,1.4,.3,1.2,.8,1.6,2.6,2,3,.6,.15][w]||0));
  if(w==23)for(let k=0;k<4;k++)PT.push({x:VM.mx+(Math.random()-.5)*10,y:VM.my+8,vx:(Math.random()-.5)*60,vy:-(90+Math.random()*120),g:-20,l:.3+Math.random()*.15,c:['#bff','#8df','#fff'][Math.random()*3|0],s:2+Math.random()*3});
  if(TRS[w]){const W=WP[w],sp=W.sp*(me.ads?(W.ads!=null?W.ads:.3):1),z=.5+(me.z||0);
   const C=CAM,d0=.55,cx=VM.mx?(2*VM.mx/VW-1):.3,sx0=C.px+(C.dx+C.plx*cx)*d0,sy0=C.py+(C.dy+C.ply*cx)*d0,sz0=EY-((VM.my||VH*.7)-HZ)*d0/VH;
