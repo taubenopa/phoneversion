@@ -279,10 +279,10 @@ function drawTr(){
  for(let i=BT.length-1;i>=0;i--){const q=BT[i],T=TRS[q.w];q.t+=dt;if(!T){BT.splice(i,1);continue}const[c,g,lw,v,len,hold,kind]=T;
   if(kind=='z'){if(q.t>hold){BT.splice(i,1);continue}const al=1-q.t/hold,n=Math.max(3,q.L*1.5|0);let u0=0;for(let k=1;k<=n;k++){const u1=q.L*k/n,o=k<n?(Math.random()-.5)*.35:0,sv=q.ez;q.ez=sv+o;seg(q,u0,u1,c,lw,al,g);q.ez=sv;u0=u1}continue}
   if(kind=='r'){if(q.t>hold){BT.splice(i,1);continue}const al=(1-q.t/hold)**1.5;seg(q,0,q.L,c,lw*(1+q.t*3),al,g);continue}
-  const head=Math.min(q.L,q.t*v),tail=Math.max(0,head-len),done=tail>=q.L;
+  const head=Math.min(q.L,q.t*v),tail=Math.max(0,q.t*v-len),done=tail>=q.L;   // Ende der Spur laeuft weiter, bis sie am Ziel ankommt -> dann weg
   if(hold){const al=Math.max(0,1-q.t/hold)*.35;if(al>0)seg(q,0,head,'rgba(220,230,255,1)',lw*.5,al,null)}
   if(!done)seg(q,tail,head,c,lw,Math.max(.35,1-q.t*6),g);
-  if(done&&(!hold||q.t>hold))BT.splice(i,1)}
+  if((done&&(!hold||q.t>hold))||q.t>2)BT.splice(i,1)}   // Sicherheit: nach 2 s immer weg
  x.restore()}
 function ac(){if(!AC){AC=new AudioContext();mst=AC.createGain();mst.gain.value=.85;const c=AC.createDynamicsCompressor();mst.connect(c);c.connect(AC.destination);
  nb=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
