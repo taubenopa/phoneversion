@@ -1,5 +1,5 @@
 // TAUBENGAME - Engine (Raycaster, Waffen, Netzwerk, Rendering). Story-Modus: siehe story.js
-const BG=new Audio();BG.loop=true;BG.volume=.15;BG.src='music.mp3';
+const BG=new Audio();BG.loop=true;BG.volume=.15;
 addEventListener('pointerdown',()=>{if(BG.paused&&BG.src&&!BG.error)BG.play().catch(()=>{})});
 addEventListener('keydown',()=>{if(BG.paused&&BG.src&&!BG.error)BG.play().catch(()=>{})});
 const $=i=>document.getElementById(i),cv=$('cv'),VW=480,VH=270,HS=2;cv.width=VW*HS;cv.height=VH*HS;
@@ -9,6 +9,8 @@ let x=XW;
 for(const c of[XH,XW]){const f=c.fillText.bind(c);c.fillText=(s,a,b)=>f(LANG=='en'?trs(''+s):s,a,b)}
 let SENS=1,pmOpen=0;   // Empfindlichkeit, Spielmenue offen
 const toWorld=()=>{x=XW},toHud=()=>{XH.setTransform(HS,0,0,HS,0,0);XH.globalAlpha=1;XH.globalCompositeOperation='source-over';XH.imageSmoothingEnabled=false;XH.drawImage(wcv,0,0);x=XH};
+// Negative Radien (z.B. Schatten von Spielern hoch in der Luft) werfen im Browser einen Fehler -> immer abfangen
+{const P=CanvasRenderingContext2D.prototype,ar=P.arc,el=P.ellipse;P.arc=function(a,b,r,...q){return ar.call(this,a,b,r>0?r:0,...q)};P.ellipse=function(a,b,rx,ry,...q){return el.call(this,a,b,rx>0?rx:0,ry>0?ry:0,...q)}}
 // ---------- Karte ----------
 const N=24,G=new Uint8Array(N*N);
 // B = unsichtbare Hindernisse (Autos, Baeume), FG = Bodenart pro Feld (nur Aussenkarten), DECO = Deko-Sprites
@@ -675,7 +677,7 @@ function render(){
    const dd=s.dd||0,fa=Math.min(1,dd/.6),fe=fa*fa*(3-2*fa),mv=s.mv&&!dd?1:0,atk=Math.min(1,s.at/.3),ph=s.ph,gr=Math.min(1,(s.age==null?1:s.age)/.35);
    const br=.012*Math.sin(now*3+s.x*3),sq=1+br+.1*atk+(s.f?.05:0);
    const h=sz*T.s*sq*(.35+.65*gr)*(1-.74*fe),w=sz*T.s*T.w*(1+.08*atk)*(2-sq)*(1+.55*fe),cx=cxr+(s.f?Math.sin(now*90)*1.5:0),bot=gy-(s.z||0)*sz,top=bot-h,ci=cxr|0,vis=ci>=0&&ci<VW&&Z[ci]>s.ty;
-   if(vis){x.fillStyle='rgba(0,0,0,.36)';x.beginPath();x.ellipse(cxr,gy,w*.48*(1-(s.z||0)*.7),Math.max(1,sz*.03),0,0,6.3);x.fill()}
+   if(vis){x.fillStyle='rgba(0,0,0,.36)';x.beginPath();x.ellipse(cxr,gy,Math.max(.5,w*.48*(1-Math.min(1,(s.z||0)*.7))),Math.max(1,sz*.03),0,0,6.3);x.fill()}
    const lv=nlv(Math.max(2,Math.min(8,(8/(1+s.ty*FOG))|0)),s.x,s.y),src=s.f?I.fl:dd>.25?I.sh[Math.max(2,lv-2)]:I.sh[lv];
    const sw=Math.sin(ph),bb=Math.abs(Math.cos(ph))*sz*.04*mv,lean=sw*h*.05*mv-atk*h*.05+(s.f?h*.04:0),stride=sz*.11*mv,SPL=.62,uh=h*SPL,lh=h*(1-SPL),sy=I.h*SPL;
    const x0=Math.max(0,(cx-w/2)|0),x1=Math.min(VW-1,(cx+w/2)|0);
@@ -756,8 +758,14 @@ function hud(){
 }
 // ---------- Hauptschleife ----------
 let last=performance.now();
+// Fehler in einem einzelnen Bild duerfen das Spiel nicht einfrieren: naechstes Bild wird zuerst angefordert, Fehler nur gemeldet
+const ERRS=[];
 function loop(t){
- dt=Math.min(.05,(t-last)/1000);last=t;
+ requestAnimationFrame(loop);
+ try{frame(t)}catch(e){if(ERRS.length<20){ERRS.push((e&&e.stack||String(e)).slice(0,400));console.error(e)}try{XW.globalCompositeOperation=XH.globalCompositeOperation='source-over';XW.globalAlpha=XH.globalAlpha=1}catch(_){}}
+}
+function frame(t){
+ dt=Math.min(.05,Math.max(0,(t-last)/1000)||0);last=t;
  if(mode){
   if(pmOpen)padMenu();padPoll();
   if(mode==1){
@@ -767,6 +775,5 @@ function loop(t){
    if(S&&S.p){if(mode==2&&S.m!==undefined&&S.m!==cur)loadMap(S.m);local();if(S.st)storyClient();if(S.st&&storyFull()){toHud();storyScreen()}else{render();if(S.st)storyOverlay()}}
    else if(mode==2){toHud();x.fillStyle='#0b0b0e';x.fillRect(0,0,VW,VH);x.fillStyle='#fd4';x.font='bold 14px monospace';x.textAlign='center';x.fillText('Verbunden! Warte, bis der Host startet...',VW/2,VH/2)}
  }else if(typeof attract=='function')attract(t);
- requestAnimationFrame(loop);
 }
 function boot(){storyMenu();if(typeof menuInit=='function')menuInit();requestAnimationFrame(loop)}
