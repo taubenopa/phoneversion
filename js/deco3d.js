@@ -6,7 +6,7 @@ const CARC={41:'#b9bcc0',42:'#1d2238',43:'#b3242a',44:'#2b2b2e',45:'#e8e8e4'};
 // k:'m' = echtes 3D-Modell (siehe MODELS unten), hl/hw = halbe Laenge/Breite der Hitbox, r = runde Hitbox
 const D3={41:{k:'m',hl:.82,hw:.38},42:{k:'m',hl:.82,hw:.38},43:{k:'m',hl:.82,hw:.38},44:{k:'m',hl:.82,hw:.38},45:{k:'m',hl:.98,hw:.44},
  47:{k:'m',hl:.52,hw:.06},56:{k:'m',hl:.46,hw:.36},57:{k:'m',hl:.62,hw:.05},59:{k:'m',hl:.18,hw:.14},55:{k:'m',r:.34},46:{k:'m',r:.17},53:{k:'m',r:.08},54:{k:'m',r:.2},
- 40:{k:'round',r:.28},48:{k:'round',r:.3},49:{k:'round',r:.08},50:{k:'round',r:.08},51:{k:'round',r:.35},52:{k:'round',r:.28},
+ 40:{k:'m',r:.22},48:{k:'m',r:.3},49:{k:'round',r:.08},50:{k:'round',r:.08},51:{k:'round',r:.35},52:{k:'round',r:.28},
  58:{k:'round',r:.08},80:{k:'round',r:.08}};
 const BIGB={40:1,41:1,42:1,43:1,44:1,45:1,51:1,56:1};   // grosse Sachen bleiben fuer die Wegsuche der Gegner gesperrt
 let OBJ=[],OBC=null;
@@ -25,7 +25,7 @@ function buildObj(){OBJ=[];OBC=new Array(N*N);
   if(BIGB[d.t])B[(d.y|0)*N+(d.x|0)]=1;
   const r=d.r||0,ca=Math.cos(r),sa=Math.sin(r),H=T.s,L=T.s*T.a,o={d,x:d.x,y:d.y,r,ca,sa,F:[],k:S.k};
   const P=(u,v)=>[d.x+u*ca-v*sa,d.y+u*sa+v*ca];
-  if(S.k=='m'){o.M=buildModel(d.t,P);if(S.r)o.rr=S.r;else{o.hl=S.hl;o.hw=S.hw}}
+  if(S.k=='m'){o.M=buildModel(d.t,(u,v)=>{const a=VARS[d.t]?((d.x*3.1+d.y*5.7)%6.28):0,c=Math.cos(a),sn=Math.sin(a);return P(u*c-v*sn,u*sn+v*c)},d);if(S.r)o.rr=S.r;else{o.hl=S.hl;o.hw=S.hw}}
   else if(S.k=='box'){const hl=L/2,hw=S.W/2,c=[P(-hl,-hw),P(hl,-hw),P(hl,hw),P(-hl,hw)],e=S.end=='car'?carEnd(d.t,T):T.c;
    o.F=[{a:c[0],b:c[1],tex:T.c,H},{a:c[1],b:c[2],tex:darker(e),H},{a:c[2],b:c[3],tex:T.c,H,mir:1},{a:c[3],b:c[0],tex:darker(e),H}];o.hl=hl;o.hw=hw}
   else if(S.k=='plane'){const hl=L/2;o.F=[{a:P(-hl,0),b:P(hl,0),tex:T.c,H,two:1}];o.hl=hl;o.hw=S.W/2}
@@ -107,11 +107,17 @@ const MODELS={
   for(const s of[-1,1]){const v=s*.3;m.bx(-.11,.11,v-.1,v+.1,.22,.25,d);m.bx(-.11,.11,s<0?v-.12:v+.09,s<0?v-.09:v+.12,.25,.5,d);for(const a of[-.09,.09])for(const b of[-.08,.08])m.bx(a-.012,a+.012,v+b-.012,v+b+.012,0,.22,d)}return m.F},
  bin(){const m=MB();m.cy(0,0,0,.15,.4,10,[38,39,43]);m.cy(0,0,.4,.16,.05,10,[232,194,26]);m.decV(-.151,-1,-.05,.05,.22,.3,[220,220,220]);return m.F},
  bollard(){const m=MB(),g=[154,158,164];m.cy(0,0,0,.045,.36,8,g);m.cy(0,0,.11,.047,.04,8,[220,40,40]);m.cy(0,0,.36,.05,.03,8,[216,218,221]);return m.F},
+ tree(vr){const m=MB(),R=k=>{const v=Math.sin(vr*91.7+k*12.9898)*43758.5453;return v-Math.floor(v)};const tr=[74,54,38],G=[[35,90,30],[47,116,38],[63,143,48],[88,168,62]];
+  m.bx(-.11,.11,-.11,.11,0,1.6,tr,{top:tr});m.bx(-.04,.3,-.05,.05,1.1,1.2,tr);m.bx(-.28,.04,-.05,.05,1.25,1.33,tr);
+  const C=[[0,0,1.55,.62],[.42,.15,1.75,.42],[-.4,-.2,1.8,.44],[.1,-.42,1.9,.4],[-.15,.4,1.95,.42],[0,0,2.35,.5],[.25,.2,2.7,.32],[-.2,-.15,2.75,.3]];
+  C.forEach((c,i)=>{const r=c[3]*(.85+.3*R(i)),g=G[(i+(vr|0))%4];m.bx(c[0]-r,c[0]+r,c[1]-r,c[1]+r,c[2]-r*.6,c[2]+r*.9,g,{top:shadeC(g,1.15)})});return m.F},
+ bush(vr){const m=MB(),G=[[35,90,30],[47,116,38],[63,143,48]];m.bx(-.32,.3,-.26,.26,0,.32,G[vr%3],{top:G[(vr+1)%3]});m.bx(-.2,.22,-.18,.2,.25,.45,G[(vr+1)%3],{top:G[(vr+2)%3]});m.bx(.1,.36,-.1,.2,.05,.3,G[(vr+2)%3]);return m.F},
  cone(){const m=MB();m.bx(-.14,.14,-.14,.14,0,.05,[210,34,34]);m.cone(0,0,.05,.02,.42,.13,10,[232,162,31]);m.ball(0,0,.5,.13,[246,208,224]);m.ball(0,0,.62,.1,[138,209,154]);m.ball(0,0,.72,.05,[230,50,50]);return m.F}};
 const MODFOR={41:()=>MODELS.car('#b9bcc0'),42:()=>MODELS.car('#1d2238'),43:()=>MODELS.car('#b3242a'),44:()=>MODELS.car('#2b2b2e'),45:()=>MODELS.van(),56:()=>MODELS.container(),
- 57:()=>MODELS.fence(),47:()=>MODELS.barrier(),59:()=>MODELS.aboard(),55:()=>MODELS.table(),46:()=>MODELS.bin(),53:()=>MODELS.bollard(),54:()=>MODELS.cone()};
+ 57:()=>MODELS.fence(),47:()=>MODELS.barrier(),59:()=>MODELS.aboard(),55:()=>MODELS.table(),46:()=>MODELS.bin(),53:()=>MODELS.bollard(),54:()=>MODELS.cone(),40:v=>MODELS.tree(v),48:v=>MODELS.bush(v)};
+const VARS={40:3,48:3};   // Baeume und Buesche gibt es in mehreren Varianten
 const MCACHE={};
-function buildModel(t,P){const F=MCACHE[t]||(MCACHE[t]=MODFOR[t]());   // lokale Flaechen -> Welt
+function buildModel(t,P,d){const vr=VARS[t]?Math.abs(((d.x*7.3+d.y*13.1)|0))%VARS[t]:0,key=t+':'+vr,F=MCACHE[key]||(MCACHE[key]=MODFOR[t](vr));   // lokale Flaechen -> Welt
  return F.map(f=>{const v=f.v.map(p=>{const w=P(p[0],p[1]);return[w[0],w[1],p[2]]});const a=v[0],b=v[1],c=v[2],ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],wx=c[0]-a[0],wy=c[1]-a[1],wz=c[2]-a[2];
   let n=[uy*wz-uz*wy,uz*wx-ux*wz,ux*wy-uy*wx];const l=Math.hypot(...n)||1;n=n.map(q=>q/l);return{v,c:f.c,n,cx:v.reduce((s,p)=>s+p[0],0)/v.length,cy:v.reduce((s,p)=>s+p[1],0)/v.length,cz:v.reduce((s,p)=>s+p[2],0)/v.length}})}
 const SUN=(()=>{const v=[.45,.3,.85],l=Math.hypot(...v);return v.map(q=>q/l)})();
