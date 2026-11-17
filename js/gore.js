@@ -20,14 +20,14 @@ function goreImg(t){if(IMG[t])return IMG[t];if(GIMG[t])return GIMG[t];const T=ST
 function bloodLand(q){if(q.bl==1){q.bl=2;if(Math.random()<.45)decal(q.x,q.y,.025+Math.random()*.05,.8)}}
 // Treffer am Gegner (neuer Treffer erkannt ueber e.hn)
 function goreHit(e,q,f,now){const ha=e.ha!=null?e.ha:Math.atan2(q.y-me.y,q.x-me.x),big=e.t>=30||e.t==10||e.t==19;
- f.ht=now;f.ha=ha;spray(q.x,q.y,.55,ha,big?12:9,1.6);
+ f.ht=now;f.ha=ha;spray(q.x,q.y,.55,ha,big?12:9,1.6);if(typeof painSnd=='function')painSnd(q.x,q.y,e.t);
  for(let k=0;k<4&&WPT.length<600;k++)WPT.push({x:q.x,y:q.y,z:.55,vx:Math.cos(ha+Math.PI+(Math.random()-.5))*.6,vy:Math.sin(ha+Math.PI+(Math.random()-.5))*.6,vz:.6,g:5,l:.25,m:.3,c:'#ff4a3a',s:.05});
  if(Math.random()<.5)decal(q.x+Math.cos(ha)*(.3+Math.random()*.4),q.y+Math.sin(ha)*(.3+Math.random()*.4),.06+Math.random()*.06)}
 // Tod: Art waehlen und Leiche / Stuecke erzeugen
 function goreDeath(e,q,now){
  const I=goreImg(e.t),T=ST[e.t],ka=e.ka!=null?e.ka:Math.atan2(q.y-me.y,q.x-me.x),boss=e.t>=30||e.t==10||e.t==19;
  const style=boss?'boss':((e.ov||0)>=35||(e.kd||0)>=60||e.kx)?'gib':((e.id*7)%3==0?'crumple':'back');
- spray(q.x,q.y,.5,ka,boss?50:style=='gib'?40:22,boss?2.4:style=='gib'?3:2);
+ spray(q.x,q.y,.5,ka,boss?50:style=='gib'?40:22,boss?2.4:style=='gib'?3:2);if(typeof deathSnd=='function')deathSnd(q.x,q.y,style,boss,e.t);
  if(style=='gib'&&I&&T){gibs(e,q,I,T,ka);for(let k=0;k<7;k++)decal(q.x+Math.cos(ka+(Math.random()-.5)*2)*Math.random()*1.4,q.y+Math.sin(ka+(Math.random()-.5)*2)*Math.random()*1.4,.08+Math.random()*.14);pool(q.x,q.y,.5);shk=Math.max(shk,1.5);return}
  if(!I||!T)return;
  const C={t:e.t,x:q.x,y:q.y,x0:q.x,y0:q.y,ka,style,b:now,side:Math.random()<.5?-1:1,s:e.id};GORE.corp.push(C);if(GORE.corp.length>24)GORE.corp.shift();
@@ -73,7 +73,8 @@ function drawDecals(px,py,dx,dy,plx,ply,now){const D=GORE.dec;if(!D.length)retur
   if(rx>2){x.fillStyle='rgb('+(130*lv|0)+','+(10*lv|0)+','+(8*lv|0)+')';for(let k=0;k<3;k++){const o=Math.sin(d.s+k*2.1),p=Math.cos(d.s*1.3+k*1.7);x.beginPath();x.ellipse(sx+o*rx*.55,gy+p*ry*.5,rx*.38,ry*.38,0,0,7);x.fill()}}}
  x.globalAlpha=1}
 // Deathmatch: Spieler, die getroffen werden, bluten auch
-function goreP(p,q){const o=GORE.hp[p.i];if(o!=null&&p.hp<o-1&&p.al)spray(q.x,q.y,.6,Math.atan2(q.y-me.y,q.x-me.x),8,1.4);GORE.hp[p.i]=p.hp}
+function goreP(p,q){const o=GORE.hp[p.i];if(o!=null&&p.hp<o-1&&p.al){spray(q.x,q.y,.6,Math.atan2(q.y-me.y,q.x-me.x),8,1.4);if(typeof painSnd=='function')painSnd(q.x,q.y,0)}
+ if(GORE.al&&GORE.al[p.i]&&!p.al&&typeof deathSnd=='function')deathSnd(q.x,q.y,'back',0,0);(GORE.al||(GORE.al={}))[p.i]=p.al;GORE.hp[p.i]=p.hp}
 // Kill-Anzeige am Fadenkreuz (eigene Kills)
 let killM=0,lastSc0=-1;
 function killMark(P,gx){if(lastSc0>=0&&(P.sc|0)>lastSc0&&!S.dm){killM=.32}lastSc0=P.sc|0;if(killM<=0)return;killM-=dt;const a=Math.min(1,killM/.15),r=6+(.32-killM)*14;

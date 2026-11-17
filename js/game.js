@@ -723,7 +723,7 @@ function render(){
   const tr=TRL[j.t];if(tr&&Math.random()<tr[0]*dt*60)WPT.push({x:j.x,y:j.y,z:tr[3]||.42,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,vz:tr[4]||.2,g:tr[5]||0,l:tr[2],m:tr[2],c:tr[1][Math.random()*tr[1].length|0],s:tr[6]||.035})});
  S.k.forEach(k=>sp.push({x:k.x,y:k.y,t:k.t,pk:1}));
  for(const d of DECO)sp.push(d);
- S.p.forEach(p=>{if(!(p.on&&p.al&&p.i!=id))return;const q=smo('p'+p.i,p);if(S.dm)goreP(p,q);const a=PAN[p.i]||(PAN[p.i]={x:q.x,y:q.y,ph:0,t:0});
+ S.p.forEach(p=>{if(S.dm&&p.on&&p.i!=id&&!p.al&&GORE.al&&GORE.al[p.i]){GORE.al[p.i]=0;deathSnd(p.x,p.y,'back',0,0)}if(!(p.on&&p.al&&p.i!=id))return;const q=smo('p'+p.i,p);if(S.dm)goreP(p,q);const a=PAN[p.i]||(PAN[p.i]={x:q.x,y:q.y,ph:0,t:0});
   const d=Math.hypot(q.x-a.x,q.y-a.y);a.x=q.x;a.y=q.y;a.ph+=d*4;if(d>.0015)a.t=.15;else a.t-=dt;
   sp.push({x:q.x,y:q.y,z:p.z||0,t:IMG['c'+p.ch]?'c'+p.ch:8,pl:1,c:PC[p.i],ph:a.ph,mv:a.t>0?1:0,at:0,dd:0,f:0,i:p.i,n:p.nm||'P'+(p.i+1)})});
  ultRender(sp,now);goreSprites(sp,now);

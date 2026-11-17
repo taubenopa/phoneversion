@@ -144,6 +144,7 @@ js/game.js            Engine: Karten, Waffen, Gegner, Netzwerk, Grafik
 js/fx.js              Waffensounds, Waffen-Symbole, Geschosse, Explosionen
 js/skins.js           Waffen-Skins (Farben, Muster, Vorschaubilder)
 js/gore.js            Treffer- und Todes-Effekte (Blut, Umfallen, Zerplatzen, Blutflecken)
+js/screams.js         Todesschreie und Schmerzlaute der Gegner (assets/sfx/scream1-5, pain1-3)
 js/deco3d.js          Echte 3D-Modelle für Autos, Container, Zäune, Poller, Tische usw. und Hitboxen für alle Deko
 js/sandbox.js         Sandbox-Modus (frei spielen, Gegner/Bosse spawnen, Unverwundbar usw.)
 js/mappick.js         Kartenauswahl mit Vorschaubildern (Bilder in assets/maps)
