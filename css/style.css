@@ -151,3 +151,18 @@ body.touch{touch-action:manipulation;-webkit-user-select:none;user-select:none;-
 @media(orientation:portrait){body.touch.ingame #rot{display:flex}}
 @media(max-height:500px){#m{grid-template-columns:minmax(240px,300px) minmax(0,1fr)}.side{padding-top:10px!important}.side p{display:none}#nav button i{display:none}#nav button{padding-top:4px!important;padding-bottom:4px!important}}
 body.touch #pm .pmbox{width:min(520px,100%)}body.touch #pm button{min-height:40px}
+/* ---------- Skins ---------- */
+#chests{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){#chests{grid-template-columns:repeat(2,1fr)}}
+.wi.has{cursor:pointer}.wi.has:hover,.wi.sel{border-color:var(--gold);background:#1b1410}
+.wi img.sk{height:44px;width:auto;max-width:100%;object-fit:contain}
+.wi small{font-size:8.5px;color:var(--dim);margin-top:1px}
+#reel .it.sk img{height:auto;width:76px}
+.res.sk img{height:auto;width:150px}
+#skp{display:none}#skp.on{display:block;margin-top:8px;padding:8px 10px;background:#0d0a0a;border:1px solid var(--gold)}
+#skp h4{margin:0 0 6px;font-size:13px;color:var(--gold)}
+#skp .sks{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px}
+#skp button.sk{background:#120d0c;border:1px solid var(--line);border-bottom:3px solid var(--rc);padding:4px;display:flex;flex-direction:column;align-items:center;color:#fff;cursor:pointer;font:inherit}
+#skp button.sk.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+#skp button.sk img{width:88px;height:44px;object-fit:contain}#skp button.sk b{font-size:10px}#skp button.sk i{font-style:normal;font-size:9px;color:var(--rc)}
+@media(max-width:560px){#chests{grid-template-columns:1fr 1fr}}

@@ -130,14 +130,14 @@ function shade(c,mt,n,fc){   // Licht: Grund + Streulicht + Glanz + Randlicht
  const v=nrm([-fc[0],-fc[1],-fc[2]]),d=Math.max(0,n[0]*LIGHT[0]+n[1]*LIGHT[1]+n[2]*LIGHT[2]),h=nrm([LIGHT[0]+v[0],LIGHT[1]+v[1],LIGHT[2]+v[2]]),
   s=M[2]*Math.pow(Math.max(0,n[0]*h[0]+n[1]*h[1]+n[2]*h[2]),M[3]),r=.18*Math.max(0,n[0]*RIM[0]+n[1]*RIM[1]+n[2]*RIM[2]),ao=.86+.14*Math.max(-1,Math.min(1,n[1]+.3)),k=(M[0]+M[1]*d)*ao+r;
  return[c.map(q=>Math.min(255,q*k+255*s)|0),c.map(q=>Math.min(255,q*k*.62+255*s*.4)|0)]}
-function drawModel(M,T){
- const F=[];
- for(const p of M.L){const v=p.v.map(q=>xf(q,T));
-  for(const f of p.f){const a=v[f[0]],b=v[f[1]],c=v[f[2]],u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],w=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],
+function drawModel(M,T,sk,tm){
+ const F=[];tm=tm||performance.now();let pi=0;
+ for(const p of M.L){const v=p.v.map(q=>xf(q,T));pi++;let fi=0;
+  for(const f of p.f){fi++;const a=v[f[0]],b=v[f[1]],c=v[f[2]],u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],w=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],
    n=[u[1]*w[2]-u[2]*w[1],u[2]*w[0]-u[0]*w[2],u[0]*w[1]-u[1]*w[0]];if(n[0]*a[0]+n[1]*a[1]+n[2]*a[2]>=0)continue;   // Rueckseite
    const poly=clipZ(f.map(i=>v[i]));if(poly.length<3)continue;
-   const fc=[0,1,2].map(k=>poly.reduce((s,q)=>s+q[k],0)/poly.length),[fcol,ecol]=shade(p.c,p.m,nrm(n),fc);
-   F.push({z:fc[2],s:poly.map(proj),c:'rgb('+fcol.join(',')+')',k:(p.sm&&p.sm.has(f))||!ecol?null:'rgb('+ecol.join(',')+')',e:p.m=='e'})}}
+   const fc=[0,1,2].map(k=>poly.reduce((s,q)=>s+q[k],0)/poly.length),[pc,pm]=sk&&(p.m=='m'||p.m=='p'||p.m=='w')?sk.f(p.c,(pi*131+fi*17)%997,tm):[p.c,p.m],[fcol,ecol]=shade(pc,pm,nrm(n),fc);
+   F.push({z:fc[2],s:poly.map(proj),c:'rgb('+fcol.join(',')+')',k:(p.sm&&p.sm.has(f))||!ecol?null:'rgb('+ecol.join(',')+')',e:pm=='e'})}}
  F.sort((a,b)=>b.z-a.z);x.lineJoin='round';
  for(const f of F){x.fillStyle=f.c;x.beginPath();x.moveTo(f.s[0][0],f.s[0][1]);for(let i=1;i<f.s.length;i++)x.lineTo(f.s[i][0],f.s[i][1]);x.closePath();x.fill();
   x.lineWidth=f.k?.45:.6;x.strokeStyle=f.k||f.c;x.stroke()}
@@ -161,7 +161,7 @@ function drawWeapon(P,now){
   z:.33*(1-ae)+M.az*ae-(w?k*kick*.05:-k*.02),
   y:-.06*(1-ae)+VM.sx*.002*calm,p:-(w?k*kick*.07:0)-sink*.5+air*.03,r:(.05*(1-ae))};
  if((w==3||w==14||w==16)&&fl>0){T.x+=(Math.random()-.5)*.003;T.ty+=(Math.random()-.5)*.003}
- drawModel(M,T);
+ drawModel(M,T,typeof skinOf=='function'?skinOf(w):null);
  const m=proj(xf(M.mz,T));VM.mx=m[0];VM.my=m[1];
  const gl=(c,r,a,px,py)=>{px=px==null?m[0]:px;py=py==null?m[1]:py;const q=x.createRadialGradient(px,py,0,px,py,r);q.addColorStop(0,c);q.addColorStop(1,'rgba(0,0,0,0)');x.globalAlpha=a;x.globalCompositeOperation='lighter';x.fillStyle=q;x.beginPath();x.arc(px,py,r,0,7);x.fill();x.globalAlpha=1;x.globalCompositeOperation='source-over'};
  if(w==5)gl('#3df',10+Math.sin(now*9)*2,.5);if(w==6)gl('#5f5',16+Math.sin(now*6)*4,.55);if(w==12)gl('#3cf',8+Math.sin(now*8)*2,.45);if(w==11)gl('#6cf',7,.45);

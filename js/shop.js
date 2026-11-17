@@ -5,14 +5,18 @@
 const CHESTS=[
  {nm:'Taubenkiste',cost:40,c1:'#c98a4b',c2:'#7a4a22',od:[70,25,5,0,0]},
  {nm:'Silberkiste',cost:100,c1:'#dfe6ee',c2:'#7d8896',od:[20,45,28,7,0]},
- {nm:'Goldkiste',cost:220,c1:'#ffd65a',c2:'#a8730f',od:[0,15,45,32,8]}];
+ {nm:'Goldkiste',cost:220,c1:'#ffd65a',c2:'#a8730f',od:[0,15,45,32,8]},
+ {nm:'Skinkiste',cost:120,c1:'#b07cff',c2:'#4b2a8a',od:[38,32,19,9,2],sk:1}];   // Skins nur fuer Waffen, die du schon hast
 const DUP_REFUND=.5,START_COINS=50;
 let COINS=(()=>{try{const v=localStorage.hfCoins;return v==null?START_COINS:Math.max(0,+v||0)}catch(e){return START_COINS}})();
 let lastSc=0,coinFl=0,coinAdd=0,shopBusy=0,shopPend=-1;   // shopPend = gerade gezogene Waffe, bleibt bis zum Ende der Walze verdeckt
 const RW=r=>Object.keys(RAR).map(Number).filter(w=>RAR[w]==r);   // Waffen einer Seltenheit
 const hasW=w=>(LO>>w&1)&&w!==shopPend;
-const chestDone=c=>![0,1,2,3,4].some(r=>c.od[r]>0&&RW(r).some(w=>!(LO>>w&1)));   // Kiste kann nichts Neues mehr geben
-function saveShop(){try{localStorage.hfCoins=Math.floor(COINS*10)/10;localStorage.hfInv=LO}catch(e){}}
+const myW=()=>owned(LO).filter(w=>w>0&&hasW(w));
+const SKP=r=>{const o=[];for(const w of myW())SKINS.forEach((k,i)=>{if(k.r==r)o.push({w,s:i})});return o};   // Skin-Paare einer Seltenheit
+const newSK=r=>SKP(r).filter(q=>!SKO[q.w+':'+q.s]);
+const chestDone=c=>c.sk?![0,1,2,3,4].some(r=>c.od[r]>0&&newSK(r).length):![0,1,2,3,4].some(r=>c.od[r]>0&&RW(r).some(w=>!(LO>>w&1)));   // Kiste kann nichts Neues mehr geben
+function saveShop(){try{localStorage.hfCoins=Math.floor(COINS*10)/10;localStorage.hfInv=LO}catch(e){}saveSkins()}
 function earn(n){if(!(n>0))return;const a=COINS|0;COINS+=n;coinAdd+=n;coinFl=1.4;if((COINS|0)!==a)saveShop()}
 // Wird jeden Frame im Spiel aufgerufen (Host und Mitspieler): Punkte des eigenen Spielers -> Coins
 function shopTick(P){const sc=P.sc|0;if(sc<lastSc)lastSc=sc;if(!S.dm&&sc>lastSc)earn((sc-lastSc)/10);lastSc=sc;if(coinFl>0){coinFl-=dt;if(coinFl<=0)coinAdd=0}}
@@ -21,7 +25,7 @@ function coinHud(){if(S.dm)return;const y=showMap?62+N*3+14:66;x.textAlign='righ
 // ---------- Menue ----------
 const ICON={};
 function icon(w){if(ICON[w])return ICON[w];const im=WIMG[w],c=document.createElement('canvas');c.width=64;c.height=64;const g=c.getContext('2d');if(im){const h=60,wd=h*WIMG.W/WIMG.H;g.drawImage(im,32-wd/2,62-h,wd,h)}return ICON[w]=c.toDataURL()}
-function lsu(){$('ls').textContent=(COINS|0)+' Coins · '+(owned(LO).filter(hasW).length-1)+'/'+(WP.length-1)+' Waffen';if($('coinbal'))shopRender()}
+function lsu(){$('ls').textContent=(COINS|0)+' Coins · '+(owned(LO).filter(hasW).length-1)+'/'+(WP.length-1)+' Waffen · '+skinCount()+' Skins';if($('coinbal'))shopRender()}
 function chestSvg(c){return '<svg viewBox="0 0 80 64" aria-hidden="true"><rect x="8" y="30" width="64" height="30" rx="3" fill="'+c.c2+'"/><rect x="10" y="32" width="60" height="26" rx="2" fill="'+c.c1+'"/>'+
  '<g class="lid"><path d="M8 30 Q8 10 40 10 Q72 10 72 30 Z" fill="'+c.c2+'"/><path d="M11 29 Q11 13 40 13 Q69 13 69 29 Z" fill="'+c.c1+'"/></g>'+
  '<rect x="34" y="26" width="12" height="14" rx="2" fill="#2a1d10"/><rect x="37" y="30" width="6" height="6" rx="1" fill="'+c.c1+'"/><rect x="8" y="44" width="64" height="3" fill="#0004"/></svg>'}
@@ -32,11 +36,27 @@ function shopRender(){
   d.querySelector('button').onclick=()=>openChest(i);cs.appendChild(d)})}
  cs.querySelectorAll('button').forEach(b=>{const c=CHESTS[+b.dataset.i],dn=chestDone(c);b.disabled=shopBusy||dn||COINS<c.cost;b.textContent=dn?'Alles freigeschaltet':'Öffnen · '+c.cost+' Coins'});
  const inv=$('inv');inv.innerHTML='';for(let w=1;w<WP.length;w++){const has=hasW(w),r=w==1?0:RAR[w],d=document.createElement('div');d.className='wi'+(has?' has':'');d.style.setProperty('--rc',RARC[r]);
-  d.innerHTML='<img src="'+icon(w)+'" alt=""><b>'+(has?WP[w].nm:'???')+'</b><i>'+(w==1?'Start':RARN[r])+'</i>';inv.appendChild(d)}
+  const sk=has&&skinOf(w),n=has?SKINS.filter((k,i)=>SKO[w+':'+i]).length:0;
+  d.innerHTML='<img src="'+(sk?skinIcon(w,SKINS.indexOf(sk)):icon(w))+'" alt=""'+(sk?' class="sk"':'')+'><b>'+(has?WP[w].nm:'???')+'</b><i>'+(w==1?'Start':RARN[r])+'</i>'+(has?'<small>Skins '+n+'/'+SKINS.length+'</small>':'');
+  if(has){d.tabIndex=0;d.onclick=()=>{skSel=skSel===w?-1:w;shopRender()};if(skSel===w)d.classList.add('sel')}inv.appendChild(d)}
+ skinPicker()
 }
+let skSel=-1;
+// Skin-Auswahl fuer die angeklickte Waffe
+function skinPicker(){const box=$('skp');if(!box)return;const w=skSel;if(w<1||!hasW(w)){box.className='dyn';box.innerHTML='';return}
+ const cur=SKE[w]!=null&&SKO[w+':'+SKE[w]]?SKE[w]:-1,got=SKINS.map((k,i)=>i).filter(i=>SKO[w+':'+i]);
+ box.className='dyn on';box.innerHTML='<h4>'+WP[w].nm+': Skin wählen</h4><div class="sks"></div>'+(got.length<SKINS.length?'<p class="hint">Noch '+(SKINS.length-got.length)+' Skins für diese Waffe in der Skinkiste.</p>':'');
+ const L=box.querySelector('.sks');
+ for(const i of[-1,...got]){const b=document.createElement('button'),k=SKINS[i];b.className='sk'+(i===cur?' on':'');b.style.setProperty('--rc',k?RARC[k.r]:'#666');
+  b.innerHTML='<img src="'+skinIcon(w,i)+'" alt=""><b>'+(k?k.nm:'Standard')+'</b><i>'+(k?RARN[k.r]:'')+'</i>';
+  b.onclick=()=>{if(i<0)delete SKE[w];else SKE[w]=i;saveSkins();shopRender()};L.appendChild(b)}}
 function roll(od){let q=Math.random()*100;for(let r=0;r<od.length;r++){q-=od[r];if(q<0)return r}return 0}
 function openChest(i){
  const c=CHESTS[i];if(shopBusy||COINS<c.cost||chestDone(c))return;
+ if(c.sk){let r=roll(c.od),cand=newSK(r);
+  if(!cand.length){const up=[0,1,2,3,4].filter(q=>c.od[q]>0&&newSK(q).length);if(up.length&&Math.random()<.5){r=up[Math.random()*up.length|0];cand=newSK(r)}}
+  const dup=!cand.length,pool=dup?SKP(r):cand,q=pool[Math.random()*pool.length|0];
+  COINS-=c.cost;if(!dup)SKO[q.w+':'+q.s]=1;saveShop();shopBusy=1;lsu();spin(c,q,dup);return}
  let r=roll(c.od),cand=RW(r).filter(w=>!(LO>>w&1));
  if(!cand.length){const up=[0,1,2,3,4].filter(q=>c.od[q]>0&&RW(q).some(w=>!(LO>>w&1)));if(up.length&&Math.random()<.5){r=up[Math.random()*up.length|0];cand=RW(r).filter(w=>!(LO>>w&1))}}   // halbe Chance auf eine andere Stufe, in der noch was fehlt
  const dup=!cand.length,pool=dup?RW(r):cand,w=pool[Math.random()*pool.length|0];
@@ -45,14 +65,17 @@ function openChest(i){
 // Walze wie im Story-Case-Opening, nur als HTML
 function spin(c,w,dup){
  const box=$('reel'),strip=box.querySelector('.strip'),res=$('reelres'),IW=86,WIN=36;box.classList.add('on');res.className='res dyn';res.innerHTML='';
- const items=[];for(let k=0;k<44;k++){const r=roll(c.od),L=RW(r);items.push(L[Math.random()*L.length|0])}items[WIN]=w;
- strip.style.transition='none';strip.style.transform='translateX(0)';strip.innerHTML=items.map(v=>'<div class="it" style="--rc:'+RARC[RAR[v]]+'"><img src="'+icon(v)+'" alt=""><span>'+trs(SN[v])+'</span></div>').join('');
+ const items=[];for(let k=0;k<44;k++){const r=roll(c.od),L=c.sk?SKP(r):RW(r);items.push(L.length?L[Math.random()*L.length|0]:w)}items[WIN]=w;
+ const IT=v=>typeof v=='object'?{r:SKINS[v.s].r,img:skinIcon(v.w,v.s),t:trs(SKINS[v.s].nm)}:{r:RAR[v],img:icon(v),t:trs(SN[v])};
+ strip.style.transition='none';strip.style.transform='translateX(0)';strip.innerHTML=items.map(v=>{const q=IT(v);return '<div class="it'+(c.sk?' sk':'')+'" style="--rc:'+RARC[q.r]+'"><img src="'+q.img+'" alt=""><span>'+q.t+'</span></div>'}).join('');
  const off=WIN*IW-box.clientWidth/2+IW/2+(Math.random()-.5)*50;void strip.offsetWidth;
  strip.style.transition='transform 5.2s cubic-bezier(.1,.7,.1,1)';strip.style.transform='translateX('+(-off)+'px)';
  box.scrollIntoView({block:'nearest',behavior:'smooth'});
  let last=-1;const t0=performance.now(),tick=()=>{const m=new DOMMatrix(getComputedStyle(strip).transform),k=Math.floor((-m.m41+box.clientWidth/2)/IW);if(k!==last){last=k;try{ac();tone(900+Math.random()*80,700,.035,'square',.07)}catch(e){}}if(performance.now()-t0<5300)requestAnimationFrame(tick);else done()};requestAnimationFrame(tick);
  function done(){const rf=dup?Math.round(c.cost*DUP_REFUND):0;if(rf){COINS+=rf;saveShop()}shopBusy=0;shopPend=-1;
   try{play(3);play(7)}catch(e){}
+  if(c.sk){const k=SKINS[w.s];if(!dup){SKE[w.w]=w.s;saveSkins()}res.style.setProperty('--rc',RARC[k.r]);res.className='res dyn on sk';
+   res.innerHTML='<img src="'+skinIcon(w.w,w.s,192,96)+'" alt=""><div><i>'+RARN[k.r]+' · Skin</i><b>'+k.nm+' | '+WP[w.w].nm+'</b><span>'+(dup?'Doppelt: +'+rf+' Coins zurück':'NEU! Schon ausgerüstet, im Inventar änderbar')+'</span></div>';lsu();return}
   res.style.setProperty('--rc',RARC[RAR[w]]);res.className='res dyn on';
   res.innerHTML='<img src="'+icon(w)+'" alt=""><div><i>'+RARN[RAR[w]]+'</i><b>'+WP[w].nm+'</b><span>'+(dup?'Doppelt: +'+rf+' Coins zurück':'NEU! '+DS[w])+'</span></div>';
   lsu()}

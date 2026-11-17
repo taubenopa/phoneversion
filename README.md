@@ -63,6 +63,19 @@ Es gibt kein Loadout mehr. In Koop und Deathmatch hast du alle Waffen dabei, die
 - Coins und Waffen werden im Browser gespeichert. Preise und Chancen stehen oben in `js/shop.js` (`CHESTS`).
 - Im Story-Modus bleibt alles wie vorher (Start mit Pistole, Case Opening nach jedem Level).
 
+
+### Skinkiste (120 Coins)
+Gibt Skins für Waffen, die du schon besitzt. Rein optisch, gilt in allen Modi. Ein neuer Skin wird sofort ausgerüstet. Im Inventar auf eine Waffe klicken, dann kannst du den Skin wechseln oder auf Standard zurück.
+
+| Seltenheit | Chance | Skins |
+|---|---|---|
+| Gewöhnlich | 38 % | Feuerrot, Eisblau, Arktisweiß, Blackout |
+| Selten | 32 % | Wald-Tarn, Wüsten-Tarn, Schnee-Tarn, Bubblegum |
+| Episch | 19 % | Taubenmuster, Neon (leuchtet), Lava (leuchtet) |
+| Legendär | 9 % | Gold, Diamant |
+| ULTRA | 2 % | Regenbogen (animiert), Galaxie (funkelt) |
+
+15 Skins pro Waffe. Doppelte geben 50 % zurück. Skins stehen in `js/skins.js`.
 ## Waffen halten und zielen
 
 Die Waffe ist ein echtes 3D-Modell wie in Call of Duty: schräg von hinten rechts, mit zwei Armen (rechts am Griff, links am Vordergriff). Die Modelle stehen in `js/vm.js`. Mit Rechtsklick (Controller: `LT`) zielst du: Die Waffe kommt in die Bildmitte, das Bild zoomt leicht, du läufst langsamer und die Schüsse streuen viel weniger. Sniper und Railgun haben ein Zielfernrohr mit stärkerem Zoom. Wie stark das Zielen die Streuung senkt, steht pro Waffe in `WP` (`js/game.js`) als `ads`.
@@ -105,6 +118,7 @@ index.html            Menü
 css/style.css         Aussehen des Menüs
 js/game.js            Engine: Karten, Waffen, Gegner, Netzwerk, Grafik
 js/fx.js              Waffensounds, Waffen-Symbole, Geschosse, Explosionen
+js/skins.js           Waffen-Skins (Farben, Muster, Vorschaubilder)
 js/touch.js           Handy-Steuerung (Stick, Knöpfe, Vollbild, Zielhilfe)
 js/hafen.js           Karte Hafen Grill (Nacht): Fassaden, Deko, Lichter, Nachthimmel
 js/vm.js              Waffe in der Ego-Ansicht (3D-Modelle, Arme, Zielen)
