@@ -96,7 +96,7 @@
   for(let a=0;a<w;a+=2){const t=8+7*Math.sin(a*.05)+5*Math.sin(a*.13+2)+4*Math.sin(a*.31);g.fillStyle='#04070b';g.fillRect(a,h-t,2,t)}});
 
  // ---- Karte ----
- const DC=(t,a,b)=>DECO.push({x:a,y:b,t}),FL=(a,b,w,h,t)=>{for(let j=b;j<b+h;j++)for(let i=a;i<a+w;i++)FG[j*N+i]=t},RR=(a,b,w,h,t)=>{for(let j=b;j<b+h;j++)for(let i=a;i<a+w;i++)G[j*N+i]=t};
+ const DC=(t,a,b,r)=>DECO.push({x:a,y:b,t,r:r||0}),FL=(a,b,w,h,t)=>{for(let j=b;j<b+h;j++)for(let i=a;i<a+w;i++)FG[j*N+i]=t},RR=(a,b,w,h,t)=>{for(let j=b;j<b+h;j++)for(let i=a;i<a+w;i++)G[j*N+i]=t};
  const L=[];   // Lichter: [x, y, Radius, Staerke, Hoehe des Lichthofs, Groesse, Farbe]
  const lamp=(a,b)=>{DC(58,a,b);L.push([a+.12,b,3.6,.62,2.6,.55]);};
  const plamp=(a,b)=>{DC(80,a,b);L.push([a,b,2.6,.5,1.42,.38,'255,236,190'])};
@@ -123,7 +123,7 @@
    for(const[a,b]of[[3.6,6.2],[15.7,5.6],[18.6,2.6],[3.6,13],[18.6,12.5],[18.6,20],[3.6,21],[9,9.7]])lamp(a,b);
    for(const[a,b]of[[9.6,12.5],[9.6,19.6],[13.4,15.6],[6.2,15.6]])plamp(a,b);
    // Autos
-   for(const[t,a,b]of[[41,4.6,6.5],[43,6.6,6.5],[44,8.6,6.5],[42,11.4,6.5],[44,10.4,9.5],[41,12.6,9.5],[43,14.6,9.5],[42,19.6,9.4],[41,2.6,17],[44,1.4,9.6]])DC(t,a,b);
+   for(const[t,a,b,r]of[[41,4.6,6.5,0],[43,6.6,6.5,0],[44,8.6,6.5,0],[42,11.4,6.5,0],[44,10.4,9.5,0],[41,12.6,9.5,0],[43,14.6,9.5,0],[42,19.6,9.4,0],[41,2.6,17,1.5708],[44,1.4,9.6,1.5708]])DC(t,a,b,r);
    // Platz an der Ecke: Poller, Eis-Figur, Aufsteller, Stuehle
    for(let a=13.3;a<16;a+=.9)DC(53,a,5.85);for(let b=1.5;b<5.5;b+=1)DC(53,15.85,b);DC(54,13.6,4.35);DC(59,14.6,4.6);DC(59,6.5,5.6);
    for(const a of[7.5,8.5,9.5,10.5,11.5])DC(55,a,5.55);
@@ -132,6 +132,6 @@
    // Gruenzug: Baeume, Buesche, Holzzaun
    for(const[a,b]of[[4.5,10.6],[7.2,10.6],[12.2,10.6],[15.2,10.8],[7,13],[13.6,12.6],[7,18.2],[12.4,18.8],[5,21.3],[14.6,21.4],[11.8,13.6],[19.6,7.9],[21.7,10.2],[22.3,16.4],[22.2,19.4],[21.6,4.4],[19.5,21.6]])DC(40,a,b);
    for(const[a,b]of[[4.5,12.3],[15.4,13.2],[19.5,9.6],[22.4,6],[4.5,18.8],[15.3,18.4],[20.6,16.6]])DC(48,a,b);
-   for(let a=4.6;a<15.5;a+=1.3)if(Math.abs(a-10.5)>.8)DC(57,a,10.15);for(let b=11;b<22;b+=1.3)if(Math.abs(b-15.5)>.8)DC(57,15.85,b)}});
+   for(let a=4.6;a<15.5;a+=1.3)if(Math.abs(a-10.5)>.8)DC(57,a,10.15);for(let b=11;b<22;b+=1.3)if(Math.abs(b-15.5)>.8)DC(57,15.85,b,1.5708)}});
  const sel=document.getElementById('mp');if(sel){const o=document.createElement('option');o.value=MAPS.length-1;o.textContent='Hafen Grill';sel.appendChild(o)}
 })();

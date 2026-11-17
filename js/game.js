@@ -16,7 +16,7 @@ const N=24,G=new Uint8Array(N*N);
 // B = unsichtbare Hindernisse (Autos, Baeume), FG = Bodenart pro Feld (nur Aussenkarten), DECO = Deko-Sprites
 const B=new Uint8Array(N*N),FG=new Uint8Array(N*N),DBLK={40:1,41:1,42:1,43:1,44:1,45:1,47:1,51:1};
 let JP=[],DECO=[],OUT=null,FOG=.13,story=0,SS=null,storyLobby=0,myCh=0,EID=0;
-const DC=(t,a,b)=>DECO.push({x:a,y:b,t}),FL=(a,b,w,h,t)=>{for(let j=b;j<b+h;j++)for(let i=a;i<a+w;i++)FG[j*N+i]=t};
+const DC=(t,a,b,r)=>DECO.push({x:a,y:b,t,r:r||0}),FL=(a,b,w,h,t)=>{for(let j=b;j<b+h;j++)for(let i=a;i<a+w;i++)FG[j*N+i]=t};
 const R=(a,b,w,h,t)=>{for(let j=b;j<b+h;j++)for(let i=a;i<a+w;i++)G[j*N+i]=t};
 const MAPS=[
  {nm:'Arena',es:[[12,2],[2,12.5],[21.5,12.5],[12,21.5]],
@@ -51,11 +51,11 @@ const MAPS=[
    FL(1,3,2,18,2);FL(21,3,2,18,2);FL(3,3,1,18,1);FL(20,3,1,18,1);FL(7,3,1,18,3);FL(16,3,1,18,3);
    FL(8,3,8,8,2);FL(8,13,8,8,2);
    for(const[a,b]of[[9.5,4.5],[13.5,4.5],[11.5,6.5],[9.5,8.5],[13.5,9.5],[9.5,14.5],[13.5,14.5],[11.5,16.5],[9.5,18.5],[13.5,19.5],[1.5,6.5],[1.5,13.5],[22.5,9.5],[22.5,17.5]])DC(40,a,b);
-   for(const[t,a,b]of[[41,7.5,4.5],[42,7.5,6.5],[43,7.5,9.5],[44,7.5,14.5],[41,7.5,16.5],[42,7.5,19.5],[45,16.5,4.5],[43,16.5,7.5],[41,16.5,9.5],[42,16.5,14.5],[44,16.5,17.5],[43,16.5,19.5]])DC(t,a,b);
+   for(const[t,a,b]of[[41,7.5,4.5],[42,7.5,6.5],[43,7.5,9.5],[44,7.5,14.5],[41,7.5,16.5],[42,7.5,19.5],[45,16.5,4.5],[43,16.5,7.5],[41,16.5,9.5],[42,16.5,14.5],[44,16.5,17.5],[43,16.5,19.5]])DC(t,a,b,1.5708);
    for(const[a,b]of[[1.3,3.4],[1.7,3.4],[2.1,3.4],[22.6,20.5],[22.2,20.5],[1.4,20.4]])DC(46,a,b);
    for(const b of[5,8.5,10.5,12,15.5,17.5])DC(48,1.4,b);for(const b of[4.5,6.5,12,14,15.5,19])DC(48,22.6,b);
    for(const[a,b]of[[3.5,5.5],[20.5,10.5],[3.5,17.5],[20.5,18.5]])DC(49,a,b);
-   DC(50,15.6,2.9);DC(50,8.4,21.1);DC(47,6.5,1.5);DC(47,17.5,22.5)}},
+   DC(50,15.6,2.9);DC(50,8.4,21.1);DC(47,6.5,1.5,0);DC(47,17.5,22.5)}},
  // --- Ultimative Kampf Arena Bonn: Nacht-Stadion mit Ring, Tribuenen, LED-Waenden ---
  {nm:'Ultimative Kampf Arena Bonn',bt:8,jp:[[11,11],[3,11],[20,12],[11,3],[12,20]],es:[[12,2.5],[2.5,12],[21.5,12],[12,21.5]],o:{sky:1,fog:.06},
   th:{f:[[30,20,40],[40,26,52],[16,10,22]],c:[[10,6,20],[10,6,20],[10,6,20]]},
@@ -67,7 +67,7 @@ const MAPS=[
    for(const[a,b]of[[1.5,1.5],[22.5,1.5],[1.5,22.5],[22.5,22.5]])DC(51,a,b);
    for(const[a,b]of[[9.5,5.5],[14.5,5.5],[9.5,18.5],[14.5,18.5],[5.5,9.5],[5.5,14.5],[18.5,9.5],[18.5,14.5]])DC(52,a,b)}}];
 let cur=0,th,PLT=null;
-function loadMap(i){cur=i;const M=MAPS[i],t=M.bt||1;G.fill(0);B.fill(0);FG.fill(0);DECO=[];R(0,0,N,1,t);R(0,N-1,N,1,t);R(0,0,1,N,t);R(N-1,0,1,N,t);M.b();ESP=M.es;th=M.th;OUT=M.o||null;FOG=OUT?OUT.fog:.13;PLT=null;for(const d of DECO)if(DBLK[d.t])B[(d.y|0)*N+(d.x|0)]=1;JP=(M.jp||[]).filter(q=>!G[q[1]*N+q[0]]&&!B[q[1]*N+q[0]]);for(const q of JP)FG[q[1]*N+q[0]]=8;buildLight(M)}
+function loadMap(i){cur=i;const M=MAPS[i],t=M.bt||1;G.fill(0);B.fill(0);FG.fill(0);DECO=[];R(0,0,N,1,t);R(0,N-1,N,1,t);R(0,0,1,N,t);R(N-1,0,1,N,t);M.b();ESP=M.es;th=M.th;OUT=M.o||null;FOG=OUT?OUT.fog:.13;PLT=null;if(typeof buildObj=='function')buildObj();else for(const d of DECO)if(DBLK[d.t])B[(d.y|0)*N+(d.x|0)]=1;JP=(M.jp||[]).filter(q=>!G[q[1]*N+q[0]]&&!B[q[1]*N+q[0]]);for(const q of JP)FG[q[1]*N+q[0]]=8;buildLight(M)}
 // ---------- Nachtbeleuchtung (nur Karten mit o.nt): Lichtkarte mit 4x4 Feldern pro Kachel ----------
 const LMR=4,LMW=N*LMR;let LMI=null,LSRC=[],NTC=1;
 function buildLight(M){LMI=null;LSRC=[];if(!M.o||!M.o.nt)return;NTC=M.o.nt;const f=new Float32Array(LMW*LMW);
@@ -79,8 +79,8 @@ const nlv=(lv,a,b)=>LMI?Math.max(1,Math.min(8,Math.round(Math.min(lv,8*NTC)+ligh
 const SP=[[2.5,2.5],[21.5,2.5],[2.5,21.5],[21.5,21.5]],A0=[.785,2.356,-.785,-2.356];
 let ESP;loadMap(0);
 const wl=(a,b)=>G[(b|0)*N+(a|0)]!=0;
-const sol=(a,b)=>{const k=(b|0)*N+(a|0);return G[k]!=0||B[k]!=0};
-const can=(a,b,r)=>!sol(a-r,b-r)&&!sol(a+r,b-r)&&!sol(a-r,b+r)&&!sol(a+r,b+r);
+const sol=(a,b)=>{const k=(b|0)*N+(a|0);return G[k]!=0||(OBC?!!OBC[k]&&objAt(a,b):B[k]!=0)};
+const can=(a,b,r)=>!sol(a-r,b-r)&&!sol(a+r,b-r)&&!sol(a-r,b+r)&&!sol(a+r,b+r)&&!(OBC&&objHit(a,b,r));
 function cast(px,py,rx,ry){
  let mx=px|0,my=py|0,ddx=Math.abs(1/rx),ddy=Math.abs(1/ry),sx,sy,sdx,sdy,side=0,t=1;
  if(rx<0){sx=-1;sdx=(px-mx)*ddx}else{sx=1;sdx=(mx+1-px)*ddx}
@@ -712,7 +712,7 @@ function render(){
   if(s.t==='G'){drawGib(s,sz,cxr,gy);continue}
   if(s.t==='P'){const q=s.q,ci=cxr|0;if(ci<0||ci>=VW||Z[ci]<s.ty)continue;const d=Math.max(1,q.s*sz);x.globalAlpha=Math.min(1,q.l/q.m*1.6);x.fillStyle=q.c;x.fillRect(cxr-d/2,gy-q.z*sz-d/2,d,d);x.globalAlpha=1;continue}
   const T=ST[s.t];if(!T)continue;
-  if(T.dec){drawDeco(s,T,sz,gy);continue}
+  if(T.dec){if(s.o&&typeof drawObj=="function"&&drawObj(s))continue;drawDeco(s,T,sz,gy);continue}
   if(T.fx){drawFx(s,T,sz,cxr,gy,now);continue}
   if(T.img){
    const I=IMG[s.t];if(!I)continue;
