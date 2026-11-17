@@ -30,7 +30,7 @@ const CHARS=[['taubenopa','taubenopa','Taubenwächter',20],['EuroJunkie','euroju
 const SPEC_CD=15;   // Ersatzwert, falls ein Charakter keine Abklingzeit hat
 // Case Opening: welche Waffen (Index in WP) nach welchem Level in der Kiste sein koennen
 const CASEP=[null,[2,8,3,14],[2,8,3,9,11,14,13],[2,8,3,9,11,5,10,7,13,15],[3,9,11,5,10,7,4,12,13,15,16],[5,10,7,4,12,6,15,16]];
-const RAR={2:0,8:0,14:0,3:1,9:1,11:1,13:1,5:2,10:2,7:2,15:2,4:3,12:3,16:3,6:4},RARC=['#4b69ff','#8847ff','#d32ce6','#eb4b4b','#ffd700'],RARN=['Gewöhnlich','Selten','Episch','Legendär','ULTRA'];
+const RAR={2:0,8:0,14:0,3:1,9:1,11:1,13:1,5:2,10:2,7:2,15:2,4:3,12:3,16:3,6:4,17:1,18:1,21:1,19:2,20:2,23:2,25:2,22:3,24:3,26:4},RARC=['#4b69ff','#8847ff','#d32ce6','#eb4b4b','#ffd700'],RARN=['Gewöhnlich','Selten','Episch','Legendär','ULTRA'];
 // Slimes Sprueche: intro = vor Level 1, 1-5 = nach dem jeweiligen Level, 6 = Ende
 const DLG={
  intro:['Yo. Ich bin\'s. Slimee Rebel.',
@@ -265,7 +265,7 @@ function drawCard(s){
  txt('Song: '+L.song,VW/2,236,9,'#889','center');
  if(s.ck>1)txt('Checkpoint: '+(s.ck>s.lv*WAVES_PER_LEVEL?'direkt zum Boss':'weiter ab Welle '+s.ck),VW/2,254,9,'#5e8','center');
 }
-function wIcon(w,cx,bot,H){const im=WIMG[w];if(!im)return;const wd=H*WIMG.W/WIMG.H;x.imageSmoothingEnabled=true;x.drawImage(im,cx-wd/2,bot-H,wd,H);x.imageSmoothingEnabled=false}
+const WIC={};function wIcon(w,cx,bot,H){let im=WIMG[w];if(!im){if(!WIC[w]&&typeof skinIcon=='function'){WIC[w]=new Image();WIC[w].src=skinIcon(w,-1,160,80)}const q=WIC[w];if(q&&q.complete&&q.width){const wd=H*1.6,hh=H*.8;x.imageSmoothingEnabled=true;x.drawImage(q,cx-wd/2,bot-hh-H*.1,wd,hh);x.imageSmoothingEnabled=false}return}const wd=H*WIMG.W/WIMG.H;x.imageSmoothingEnabled=true;x.drawImage(im,cx-wd/2,bot-H,wd,H);x.imageSmoothingEnabled=false}
 function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 let cItems=null,cSeed=0;
 function drawCase(s){

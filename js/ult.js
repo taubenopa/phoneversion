@@ -77,7 +77,9 @@ function ultTick(dt){
    if(z.tk<=0){z.tk=.25;for(const e of E)if(!e.dead&&!(e.br>0)&&Math.hypot(e.x-z.x,e.y-z.y)<z.r)hurtE(e,8,z.o,1);
     if(dm)for(const q of players)if(q.on&&q.al&&q.i!==z.o&&Math.hypot(q.x-z.x,q.y-z.y)<z.r)hitP(q,4,z.o)}
    if(z.l<=0)boom({x:z.x,y:z.y,t:63,ex:3.2,xd:110,o:z.o})}
-  else if(z.k==7){for(const e of E)if(!e.dead&&!(e.bl>0)&&Math.hypot(e.x-z.x,e.y-z.y)<z.r)blind(e)}   // Graffiti blendet jeden, der hineinlaeuft
+  else if(z.k==7){for(const e of E)if(!e.dead&&!(e.bl>0)&&Math.hypot(e.x-z.x,e.y-z.y)<z.r)blind(e)}
+  else if(z.k==8){if(z.tk<=0){z.tk=.25;for(const e of E)if(!e.dead&&!(e.br>0)&&Math.hypot(e.x-z.x,e.y-z.y)<z.r)hurtE(e,7,z.o,1);   // Molotow-Feuer
+    if(dm)for(const q of players)if(q.on&&q.al&&Math.hypot(q.x-z.x,q.y-z.y)<z.r)hitP(q,q.i===z.o?2:4,z.o)}}   // Graffiti blendet jeden, der hineinlaeuft
   else if(z.k==5&&z.tk<=0&&z.l>.25){z.tk=.17;const a=Math.random()*6.283,r=Math.sqrt(Math.random())*z.r;   // Steinhagel
    let rx=z.x+Math.cos(a)*r,ry=z.y+Math.sin(a)*r;if(sol(rx,ry)){rx=z.x;ry=z.y}J.push({x:rx,y:ry,vx:0,vy:0,t:26,o:z.o,l:9,fz:3.4,ex:1.5,xd:48})}
   if(z.l<=0)ZN.splice(i,1)}
@@ -117,6 +119,9 @@ function ultRender(sp,now){
  for(const z of(S.z||[])){
   if(z.k==3){for(let k=0;k<5;k++){const a=Math.random()*6.283,r=Math.sqrt(Math.random())*z.r;WPT.push({x:z.x+Math.cos(a)*r,y:z.y+Math.sin(a)*r,z:0,vx:0,vy:0,vz:.5+Math.random(),g:2.5,l:.45,m:.45,c:['#4a1f08','#6b3a1a','#8a4a1c','#e8d6c0'][Math.random()*4|0],s:.05+Math.random()*.03})}
    if(Math.random()<.6){const a=Math.random()*6.283;WPT.push({x:z.x+Math.cos(a)*z.r,y:z.y+Math.sin(a)*z.r,z:0,vx:0,vy:0,vz:0,g:0,l:.3,m:.3,c:'#c46a2a',s:.05})}}
+  else if(z.k==8){const f=Math.min(1,z.l/1.2);for(let k=0;k<7;k++){if(Math.random()>f)continue;const a=Math.random()*6.283,r=Math.sqrt(Math.random())*z.r;   // Molotow-Flammen
+    WPT.push({x:z.x+Math.cos(a)*r,y:z.y+Math.sin(a)*r,z:0,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,vz:.8+Math.random()*1.2,g:-.5,l:.35+Math.random()*.3,m:.6,c:['#ff7a1a','#ffb02e','#ffe066','#e83a14'][Math.random()*4|0],s:.05+Math.random()*.05})}
+   if(Math.random()<.35*f)WPT.push({x:z.x+(Math.random()-.5)*z.r,y:z.y+(Math.random()-.5)*z.r,z:.3,vx:0,vy:0,vz:.6,g:-.4,l:1,m:1,c:'#3a3030',s:.07})}
   else if(z.k==7){const C=['#ff3ea5','#2de2e6','#ffe22e','#9b5cff','#5ef05e'],f=Math.min(1,z.l/1.5);   // Graffiti am Boden
    for(let k=0;k<11;k++){const a=Math.random()*6.283,r=Math.sqrt(Math.random())*z.r,c=(z.s+((a*3+r*4)|0))%C.length;if(Math.random()<f)WPT.push({x:z.x+Math.cos(a)*r,y:z.y+Math.sin(a)*r,z:0,vx:0,vy:0,vz:0,g:0,l:.22,m:.22,c:C[c],s:.05})}
    if(Math.random()<.4)WPT.push({x:z.x+(Math.random()-.5)*z.r,y:z.y+(Math.random()-.5)*z.r,z:0,vx:0,vy:0,vz:.6,g:-.3,l:.6,m:.6,c:C[Math.random()*5|0],s:.03})}

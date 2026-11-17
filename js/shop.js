@@ -24,7 +24,7 @@ function coinHud(){if(S.dm)return;const y=showMap?62+N*3+14:66;x.textAlign='righ
  if(coinFl>0&&coinAdd>=1){x.globalAlpha=Math.min(1,coinFl);x.fillStyle='#fff3a0';x.fillText('+'+(coinAdd|0),VW-8,y+12+(1.4-coinFl)*-6);x.globalAlpha=1}}
 // ---------- Menue ----------
 const ICON={};
-function icon(w){if(ICON[w])return ICON[w];const im=WIMG[w],c=document.createElement('canvas');c.width=64;c.height=64;const g=c.getContext('2d');if(im){const h=60,wd=h*WIMG.W/WIMG.H;g.drawImage(im,32-wd/2,62-h,wd,h)}return ICON[w]=c.toDataURL()}
+function icon(w){if(ICON[w])return ICON[w];if(!WIMG[w]&&typeof skinIcon=='function')return ICON[w]=skinIcon(w,-1,64,64);const im=WIMG[w],c=document.createElement('canvas');c.width=64;c.height=64;const g=c.getContext('2d');if(im){const h=60,wd=h*WIMG.W/WIMG.H;g.drawImage(im,32-wd/2,62-h,wd,h)}return ICON[w]=c.toDataURL()}
 function lsu(){$('ls').textContent=(COINS|0)+' Coins · '+(owned(LO).filter(hasW).length-1)+'/'+(WP.length-1)+' Waffen · '+skinCount()+' Skins';if($('coinbal'))shopRender()}
 function chestSvg(c){return '<svg viewBox="0 0 80 64" aria-hidden="true"><rect x="8" y="30" width="64" height="30" rx="3" fill="'+c.c2+'"/><rect x="10" y="32" width="60" height="26" rx="2" fill="'+c.c1+'"/>'+
  '<g class="lid"><path d="M8 30 Q8 10 40 10 Q72 10 72 30 Z" fill="'+c.c2+'"/><path d="M11 29 Q11 13 40 13 Q69 13 69 29 Z" fill="'+c.c1+'"/></g>'+
