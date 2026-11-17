@@ -19,7 +19,7 @@ const chestDone=c=>c.sk?![0,1,2,3,4].some(r=>c.od[r]>0&&newSK(r).length):![0,1,2
 function saveShop(){try{localStorage.hfCoins=Math.floor(COINS*10)/10;localStorage.hfInv=LO}catch(e){}saveSkins()}
 function earn(n){if(!(n>0))return;const a=COINS|0;COINS+=n;coinAdd+=n;coinFl=1.4;if((COINS|0)!==a)saveShop()}
 // Wird jeden Frame im Spiel aufgerufen (Host und Mitspieler): Punkte des eigenen Spielers -> Coins
-function shopTick(P){const sc=P.sc|0;if(sc<lastSc)lastSc=sc;if(!S.dm&&sc>lastSc)earn((sc-lastSc)/10);lastSc=sc;if(coinFl>0){coinFl-=dt;if(coinFl<=0)coinAdd=0}}
+function shopTick(P){const sc=P.sc|0;if(sc<lastSc)lastSc=sc;if(!S.dm&&!S.sb&&sc>lastSc)earn((sc-lastSc)/10);lastSc=sc;if(coinFl>0){coinFl-=dt;if(coinFl<=0)coinAdd=0}}
 function coinHud(){if(S.dm)return;const y=showMap?62+N*3+14:66;x.textAlign='right';x.font='bold 10px monospace';x.fillStyle='#000a';x.fillText('Shop-Coins '+(COINS|0),VW-7,y+1);x.fillStyle='#ffd23f';x.fillText('Shop-Coins '+(COINS|0),VW-8,y);
  if(coinFl>0&&coinAdd>=1){x.globalAlpha=Math.min(1,coinFl);x.fillStyle='#fff3a0';x.fillText('+'+(coinAdd|0),VW-8,y+12+(1.4-coinFl)*-6);x.globalAlpha=1}}
 // ---------- Menue ----------

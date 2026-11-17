@@ -67,7 +67,7 @@
    <div class="grid3 g2">
     
     <label><span data-en="Difficulty">Schwierigkeit</span><select id="df"><option value="0" data-en="Easy">Leicht</option><option value="1" selected>Normal</option><option value="2" data-en="Hard">Hart</option></select></label>
-    <label><span data-en="Mode">Modus</span><select id="gm"><option value="0" data-en="Co-op">Koop</option><option value="1" data-en="Deathmatch (2+)">Deathmatch (ab 2)</option></select></label></div>
+    <label><span data-en="Mode">Modus</span><select id="gm"><option value="0" data-en="Co-op">Koop</option><option value="1" data-en="Deathmatch (2+)">Deathmatch (ab 2)</option><option value="2" data-en="Sandbox (free play)">Sandbox (frei spielen)</option></select></label></div>
    <div class="row"><button class="pri big" onclick="startGame()" data-en="Start game">Spiel starten</button></div>
    <details><summary data-en="Connect without internet (manual codes)">Ohne Internet verbinden (manuelle Codes)</summary><div><button onclick="invite()" data-en="Invite player">Mitspieler einladen</button>
     <p data-en="1. Send this code to the other player:">1. Diesen Code an den Mitspieler schicken:</p><textarea id="oc" readonly></textarea>
@@ -139,6 +139,7 @@
 <script src="js/shop.js"></script>
 <script src="js/menu.js"></script>
 <script src="js/mappick.js"></script>
+<script src="js/sandbox.js"></script>
 <script src="js/touch.js"></script>
 <script>boot();shopInit();mapPickInit()</script>
 </body></html>

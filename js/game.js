@@ -124,7 +124,7 @@ const chs=[];let pend=null,ch=null;
 // Koop: alle 5 Wellen ein Boss, der Reihe nach (30-35 = Story-Bosse, 19 = Jxhn2K)
 const CB=[30,31,32,33,34,19,35],coopBoss=w=>CB[((w/5|0)+CB.length-1)%CB.length],bossName=t=>t==19?'Jxhn2K':t==10?'LIL M':BOSS[t-29].nm;
 function LV(){return story?SS.lv:Math.min(6,1+(wave/5|0))}
-function hurtP(p,d){if(!p.al||p.iv>0)return;d*=dmg;if(p.ar>0){const a=Math.min(p.ar,d*.5);p.ar-=a;d-=a}p.hp-=d;if(p.hp<=0){p.hp=0;p.al=false;p.rt=dm||story?3:5}}
+function hurtP(p,d){if(!p.al||p.iv>0)return;if(SBX&&!story&&SB.god)return;d*=dmg;if(p.ar>0){const a=Math.min(p.ar,d*.5);p.ar-=a;d-=a}p.hp-=d;if(p.hp<=0){p.hp=0;p.al=false;p.rt=dm||story?3:5}}
 function spawnSpot(p){
  const C=[...SP,...ESP];for(let k=0;k<40;k++){const a=1.5+Math.random()*(N-3),b=1.5+Math.random()*(N-3);if(can(a,b,.4))C.push([a,b])}
  const sc=C.map(c=>{let d=99;for(const e of E)if(!e.dead)d=Math.min(d,Math.hypot(e.x-c[0],e.y-c[1]));for(const j of J)if(j.o<0)d=Math.min(d,Math.hypot(j.x-c[0],j.y-c[1])+1);
@@ -195,7 +195,7 @@ function sim(dt){
  ultTick(dt);
  const np=players.filter(p=>p.on).length;
  if(dm){pkT-=dt;if(pkT<=0&&PK.length<8){pkT=6;const s=ESP[Math.random()*4|0];PK.push({x:s[0]+Math.random()-.5,y:s[1]+Math.random()-.5,t:[6,7,11][Math.random()*3|0]})}}
- if(story)storyWaves(dt,np);else if(!dm&&!E.some(e=>!e.dead)&&toSpawn<=0){waitT-=dt;if(waitT<=0){wave++;toSpawn=2+wave*2+np*2;waitT=4;if(wave%5==0)mk(coopBoss(wave))}}
+ if(story)storyWaves(dt,np);else if(!dm&&!SBX&&!E.some(e=>!e.dead)&&toSpawn<=0){waitT-=dt;if(waitT<=0){wave++;toSpawn=2+wave*2+np*2;waitT=4;if(wave%5==0)mk(coopBoss(wave))}}
  if(toSpawn>0){spawnT-=dt;if(story)storySpawn();else if(spawnT<=0&&E.length<14){
   {const r=Math.random(),a=Math.min(.4,.08+wave*.05),b=Math.min(.25,.04+wave*.03);{const L=[16,14,20,21];if(wave>=2)L.push(13,22);if(wave>=4)L.push(17);mk(L[Math.random()*L.length|0])}}
   toSpawn--;spawnT=1.2}}
@@ -408,7 +408,7 @@ function joinCode(tries){
    else st.textContent='Raum '+code+' nicht gefunden. Der Host muss zuerst auf "Host / Solo" geklickt haben und seinen Code sehen. Code und Internet bei beiden prüfen.'}
   else st.textContent='Fehler: '+e.type+' '+(e.message||'')});
 }
-function startGame(){loadMap(+$('mp').value);const D=+$('df').value;dif=[.7,1,1.5][D];dmg=[.6,1,1.4][D];dm=+$('gm').value;if(dm)dmg=1;players[0].nm=$('nm').value.slice(0,10);players[0].lo=LO|1;players[0].w=firstW(LO|1);players[0].ch=myCh;story=0;mode=1;$('m').style.display='none';cv.requestPointerLock()}
+function startGame(){loadMap(+$('mp').value);const D=+$('df').value;dif=[.7,1,1.5][D];dmg=[.6,1,1.4][D];dm=+$('gm').value;SBX=dm==2?1:0;if(SBX){dm=0;wave=0;waitT=1e9;E=[]}if(dm)dmg=1;players[0].nm=$('nm').value.slice(0,10);players[0].lo=LO|1;players[0].w=firstW(LO|1);players[0].ch=myCh;story=0;mode=1;$('m').style.display='none';cv.requestPointerLock()}
 // ---------- Eingabe ----------
 $('mf').onchange=e=>{const f=e.target.files[0];if(!f)return;BG.src=URL.createObjectURL(f);BG.play().catch(()=>{})};
 const bgVol=()=>{BG.volume=Math.min(1,$('mv').value/100*(story||(S&&S.st)?2.2:1))};$('mv').oninput=bgVol;
@@ -419,7 +419,7 @@ addEventListener('keydown',e=>{ky[e.code]=1;if(/^Digit[1-9]$/.test(e.code)&&mode
 addEventListener('keyup',e=>ky[e.code]=0);
 addEventListener('keydown',e=>{if(pmOpen||document.activeElement&&document.activeElement.tagName=='INPUT'&&!mode)return;if(e.code=='KeyQ'&&mode)me.qn=(me.qn|0)+1;if(e.code=='KeyM')showMap^=1;if(e.code=='KeyN'){muted^=1;BG.muted=!!muted}if(e.code=='KeyP'&&mode==1)paused^=1});
 addEventListener('mousemove',e=>{if(document.pointerLockElement===cv){const s2=SENS*(1-.45*VM.ak);me.a+=e.movementX*.0025*s2;me.pt=Math.max(-95,Math.min(95,(me.pt||0)-e.movementY*.3*s2))}});
-addEventListener('mousedown',e=>{if(!mode||pmOpen)return;if(document.pointerLockElement===cv){if(e.button==2)me.ads=1;else me.f=1}else cv.requestPointerLock()});
+addEventListener('mousedown',e=>{if(!mode||pmOpen||(typeof sbOpen!='undefined'&&sbOpen))return;if(document.pointerLockElement===cv){if(e.button==2)me.ads=1;else me.f=1}else cv.requestPointerLock()});
 addEventListener('contextmenu',e=>{if(mode)e.preventDefault()});
 addEventListener('mouseup',e=>{if(e.button==2)me.ads=0;else me.f=0});
 addEventListener('wheel',e=>{if(mode&&!pmOpen){const L=owned(me.lo||63),k=Math.max(0,L.indexOf(me.w));me.w=L[(k+(e.deltaY>0?1:L.length-1))%L.length]}});
@@ -788,14 +788,14 @@ function hud(){
  if(CHARS[P.ch|0]){const qx=8,qy=VH-52,qw=96,on=P.ua>0,rdy=!(P.qc>0),k=on?P.ua/(P.um||1):rdy?1:1-P.qc/(CHARS[P.ch|0][3]||SPEC_CD);x.fillStyle='#000b';x.fillRect(qx-2,qy-11,qw+4,19);x.fillStyle='#2a1a0d';x.fillRect(qx,qy,qw,6);
   x.fillStyle=on?'#5ee8ff':rdy?(Math.sin(now*6)>0?'#ffd23f':'#ff9a2a'):'#8a5a2a';x.fillRect(qx,qy,qw*k,6);x.font='bold 8px monospace';x.textAlign='left';x.fillStyle=rdy||on?'#fff':'#bbb';x.fillText('Q  '+CHARS[P.ch|0][2]+(on?'  AKTIV':rdy?'':'  '+Math.ceil(P.qc)+'s'),qx+1,qy-3)}
  x.font='bold 12px monospace';x.textAlign='left';x.fillStyle='#fff';
- x.fillText(S.st?storyHudTop():S.dm?'DEATHMATCH':'WELLE '+S.wv+'   Gegner '+S.e.filter(e=>!e.dead).length+(mode==1&&best?'  Rekord '+best:''),8,14);if(S.st)storyHud();if(hostCode&&mode==1)x.fillText('Raum-Code: '+hostCode,8,S.st?42:28);
+ x.fillText(S.st?storyHudTop():S.dm?'DEATHMATCH':S.sb?'SANDBOX   Gegner '+S.e.filter(e=>!e.dead).length+'   B = Werkzeuge':'WELLE '+S.wv+'   Gegner '+S.e.filter(e=>!e.dead).length+(mode==1&&best?'  Rekord '+best:''),8,14);if(S.st)storyHud();if(hostCode&&mode==1)x.fillText('Raum-Code: '+hostCode,8,S.st?42:28);
  x.textAlign='right';
  S.p.forEach((p,k)=>{if(p.on){x.fillStyle=PC[p.i];x.fillText((p.i==id?'> ':'')+(p.nm||'P'+(p.i+1))+'  '+(p.al?p.hp|0:'tot')+'  '+p.sc,VW-8,14+k*14)}});
  coinHud();
  x.textAlign='center';x.fillStyle='#fff';x.font='bold 16px monospace';
  {const B=S.e.find(e=>(e.t==10||e.t==19||e.t>=30)&&!e.dead);if(B){const bw=220,bx0=gx-bw/2;x.fillStyle='#000a';x.fillRect(bx0-2,38,bw+4,14);x.fillStyle=B.hp<B.mh*.5?'#f80':B.t==19||B.t==35?'#a2c':'#c22';x.fillRect(bx0,40,bw*Math.max(0,B.hp/B.mh),10);x.fillStyle='#fff3';x.fillRect(bx0,40,bw*Math.max(0,B.hp/B.mh),2);x.font='bold 11px monospace';x.fillStyle='#fff';x.textAlign='center';x.fillText(bossName(B.t),gx,36);x.font='bold 16px monospace'}}
  if(!P.al){x.fillStyle='rgba(120,0,0,.5)';x.fillRect(0,0,VW,VH);x.fillStyle='#fff';x.fillText(S.st&&S.st.lives<=0&&P.rt<=0?'KEINE LEBEN MEHR - dein Team muss durchhalten!':'DU BIST TOT - Respawn in '+Math.max(0,Math.ceil(P.rt)),VW/2,VH/2)}
- else if(!S.dm&&!S.e.some(e=>!e.dead)&&(!S.st||S.st.ph=='play'))x.fillText(S.st&&S.st.wv>=S.st.wm?'Der Boss kommt...':'Nächste Welle kommt...',VW/2,50);
+ else if(!S.dm&&!S.sb&&!S.e.some(e=>!e.dead)&&(!S.st||S.st.ph=='play'))x.fillText(S.st&&S.st.wv>=S.st.wm?'Der Boss kommt...':'Nächste Welle kommt...',VW/2,50);
  if(bn>0){const bo=S.st?S.st.boss:S.wv%5==0,sc=1+Math.max(0,bn-3.2)*1.5;x.save();x.translate(VW/2,70);x.scale(sc,sc);x.globalAlpha=Math.min(1,bn);x.font='bold 26px monospace';const t=S.st?storyBanner():bo?'WELLE '+S.wv+' - BOSS: '+bossName(coopBoss(S.wv))+'!':'WELLE '+S.wv;x.fillStyle='#000a';x.fillText(t,1.5,1.5);x.fillStyle=bo?'#f44':'#fd4';x.fillText(t,0,0);x.restore();x.globalAlpha=1;x.font='bold 16px monospace'}
  if(document.pointerLockElement!==cv&&!GP.on&&!pmOpen){x.fillStyle='#fd4';x.fillText('KLICKEN ZUM STEUERN',VW/2,VH/2-40)}
  if(paused){x.fillStyle='rgba(0,0,0,.5)';x.fillRect(0,0,VW,VH);x.fillStyle='#fff';x.fillText('PAUSE  (P = weiter)',VW/2,VH/2)}
@@ -815,7 +815,7 @@ function frame(t){
  if(mode){if(inMenuCls!==0){inMenuCls=0;document.body.classList.remove('inmenu')}
   if(pmOpen)padMenu();padPoll();
   if(mode==1){
-    if(story)storyTick(dt);else if(!paused)sim(dt);if(!dm&&!story&&wave>best){best=wave;try{localStorage.hfBest=wave}catch(e){}}S={t:'s',m:cur,dm:dm,ev:EV,b:BS,p:players,e:E,j:J,k:PK,wv:wave,z:ZN,st:story?SS:undefined};
+    if(SBX&&!story)sbTick(dt);if(story)storyTick(dt);else if(!paused)sim(dt);if(!dm&&!story&&!SBX&&wave>best){best=wave;try{localStorage.hfBest=wave}catch(e){}}S={t:'s',m:cur,dm:dm,ev:EV,b:BS,p:players,e:E,j:J,k:PK,wv:wave,z:ZN,st:story?SS:undefined,sb:SBX&&!story?1:0};
    snapT-=dt;if(snapT<=0){snapT=.05;const m=JSON.stringify(S,rnd);chs.forEach(c=>{if(c&&(c.readyState=='open'||c.open))c.send(m)});EV=[];BS.length=0}
   }
    if(S&&S.p){if(mode==2&&S.m!==undefined&&S.m!==cur)loadMap(S.m);local();if(S.st)storyClient();if(S.st&&storyFull()){toHud();storyScreen()}else{render();if(S.st)storyOverlay()}}

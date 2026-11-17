@@ -38,6 +38,11 @@ Koop-Shooter (Raycaster) für den Browser. Koop und Deathmatch sind wie vorher, 
 - **Hafen Grill** (nur Koop und Deathmatch): offene Nachtkarte an der Feldherrnstraße in Dortmund mit Hafen Restaurant, Havanna Café, Kiosk, Grünzug und Laternenlicht. Alles steht in `js/hafen.js`.
 - Präsidentenstraße, Ultimative Kampf Arena Bonn und Hafen Grill haben Sprungfelder (blau leuchtend, auch auf der Minimap): drauflaufen, und du fliegst hoch und ein Stück in Blickrichtung. Positionen stehen bei der Karte in `js/game.js` unter `jp`.
 
+## Sandbox
+Unter „Koop & Deathmatch" den Modus **Sandbox (frei spielen)** wählen. Keine Wellen, alle Waffen sind freigeschaltet.
+Mit **B** (Controller: Select, Handy: Knopf SANDBOX) öffnen sich die Werkzeuge: einzelne Gegner, 5 oder 15 zufällige Gegner und jeden Boss spawnen, Unverwundbar, volle Munition, Ulti ohne Wartezeit, Gegner einfrieren, alle töten oder entfernen, heilen.
+In der Sandbox gibt es keine Coins und keinen Rekord.
+
 ## Handy
 Läuft im Handy-Browser (Chrome, Safari), am besten quer. Beim Spielstart geht das Spiel in den Vollbildmodus (auf dem iPhone nicht möglich, dort einfach quer halten).
 - Linke Bildschirmhälfte: Daumen auflegen und ziehen = laufen, ganz nach außen ziehen = rennen
@@ -121,6 +126,7 @@ js/fx.js              Waffensounds, Waffen-Symbole, Geschosse, Explosionen
 js/skins.js           Waffen-Skins (Farben, Muster, Vorschaubilder)
 js/gore.js            Treffer- und Todes-Effekte (Blut, Umfallen, Zerplatzen, Blutflecken)
 js/deco3d.js          Echte 3D-Modelle für Autos, Container, Zäune, Poller, Tische usw. und Hitboxen für alle Deko
+js/sandbox.js         Sandbox-Modus (frei spielen, Gegner/Bosse spawnen, Unverwundbar usw.)
 js/mappick.js         Kartenauswahl mit Vorschaubildern (Bilder in assets/maps)
 js/touch.js           Handy-Steuerung (Stick, Knöpfe, Vollbild, Zielhilfe)
 js/hafen.js           Karte Hafen Grill (Nacht): Fassaden, Deko, Lichter, Nachthimmel

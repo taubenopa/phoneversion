@@ -25,7 +25,7 @@ function menuInit(){
  $('pm-mute').onclick=()=>{muted^=1;BG.muted=!!muted;pmLabels()};
  $('pm-fs').onclick=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen()}catch(e){}};
  $('pm-quit').onclick=()=>{if(quitArm)location.reload();else{quitArm=1;$('pm-quit').textContent='Wirklich beenden? Nochmal klicken'}};
- document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===cv)hadLock=1;else if(mode&&hadLock&&!pmOpen)gameMenu(1)});
+ document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===cv)hadLock=1;else if(mode&&hadLock&&!pmOpen&&!(typeof sbOpen!='undefined'&&sbOpen))gameMenu(1)});
  addEventListener('keydown',e=>{if(e.code=='Escape'&&mode){e.preventDefault();gameMenu()}});
  langInit();logoInit();
 }

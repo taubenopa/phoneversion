@@ -193,3 +193,16 @@ body.inmenu #cv{object-fit:cover}
 #attcap b{display:block;font-size:clamp(15px,2vw,22px);color:rgba(255,255,255,.85);text-shadow:0 2px 12px rgba(0,0,0,.8)}
 body:not(.inmenu) #attcap{display:none}
 body.panopen #attcap{opacity:0}
+/* ---------- Sandbox-Werkzeuge ---------- */
+#sbx{position:fixed;left:clamp(8px,2vw,24px);top:50%;transform:translate(-110%,-50%);z-index:8;width:min(340px,calc(100vw - 16px));max-height:calc(100dvh - 24px);overflow:auto;
+ background:rgba(14,10,10,.94);border:1px solid var(--line);border-left:3px solid var(--gold);padding:10px 12px 12px;font-family:var(--mono);color:var(--ash);transition:transform .22s ease;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#sbx.on{transform:translate(0,-50%)}
+#sbx .sbh{display:flex;align-items:baseline;gap:10px}#sbx .sbh b{font-size:16px;color:var(--gold)}#sbx .sbh span{font-size:11px;color:var(--dim);flex:1}
+#sbx .sbx-c{all:unset;cursor:pointer;width:26px;height:26px;display:grid;place-items:center;color:var(--dim);font-size:14px}#sbx .sbx-c:hover{color:#fff}
+#sbx h5{margin:10px 0 5px;font-size:11px;color:var(--dim);font-weight:600}
+#sbx .sbg{display:flex;flex-wrap:wrap;gap:4px}
+#sbx .sbg button{all:unset;cursor:pointer;padding:5px 8px;font-size:11px;background:#1b1412;border:1px solid #3a2a24;color:#e8d9cc}
+#sbx .sbg button:hover,#sbx .sbg button:focus-visible{border-color:var(--gold);color:#fff}
+#sbx .sbg button.sbt.on{background:#3a2c10;border-color:var(--gold);color:var(--gold)}
+#sbx .sbr{margin-top:10px}#sbx .sbr button{background:#2a1010;border-color:#5a2020}
+#tb-sbx{display:none;right:calc(9vw + 104px + env(safe-area-inset-right));top:calc(9vh + env(safe-area-inset-top));width:62px;height:44px;border-radius:22px;font-size:8px!important}
