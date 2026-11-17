@@ -40,7 +40,7 @@ Koop-Shooter (Raycaster) für den Browser. Koop und Deathmatch sind wie vorher, 
 
 ## Sandbox
 Unter „Koop & Deathmatch" den Modus **Sandbox (frei spielen)** wählen. Keine Wellen, alle Waffen sind freigeschaltet.
-Mit **B** (Controller: Select, Handy: Knopf SANDBOX) öffnen sich die Werkzeuge: einzelne Gegner, 5 oder 15 zufällige Gegner und jeden Boss spawnen, Unverwundbar, volle Munition, Ulti ohne Wartezeit, Gegner einfrieren, alle töten oder entfernen, heilen.
+Mit **B** (Controller: Select, Handy: Knopf SANDBOX) öffnen sich die Werkzeuge: einzelne Gegner (die drei Typen aus dem Story-Modus, werwlf, EuroJunkie, Adam, YoungCola), 5 oder 15 zufällige und jeden Boss spawnen, Unverwundbar, volle Munition, Ulti ohne Wartezeit, Gegner einfrieren, alle töten oder entfernen, heilen.
 In der Sandbox gibt es keine Coins und keinen Rekord.
 
 ## Handy
