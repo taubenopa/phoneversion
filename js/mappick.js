@@ -21,3 +21,6 @@ function mapPickInit(){
   b.onclick=()=>{sel.value=i;try{localStorage.hfMap=i}catch(e){}box.querySelectorAll('.mapc').forEach(c=>c.classList.toggle('on',c===b));try{click()}catch(e){}};
   box.appendChild(b)}
 }
+// Versionsanzeige unten links im Menue (aus der ?v=... Nummer der Skripte), damit man sieht, ob das neueste Update geladen ist
+(function(){try{const s=document.querySelector('script[src*="game.js"]'),v=(s.src.match(/v=(\d{12})/)||[])[1];if(!v)return;
+ const el=document.createElement('div');el.id='ver';el.textContent='Version '+v.slice(6,8)+'.'+v.slice(4,6)+'. '+v.slice(8,10)+':'+v.slice(10,12);document.body.appendChild(el)}catch(e){}})();

@@ -206,3 +206,5 @@ body.panopen #attcap{opacity:0}
 #sbx .sbg button.sbt.on{background:#3a2c10;border-color:var(--gold);color:var(--gold)}
 #sbx .sbr{margin-top:10px}#sbx .sbr button{background:#2a1010;border-color:#5a2020}
 #tb-sbx{display:none;right:calc(9vw + 104px + env(safe-area-inset-right));top:calc(9vh + env(safe-area-inset-top));width:62px;height:44px;border-radius:22px;font-size:8px!important}
+#ver{position:fixed;left:10px;bottom:6px;z-index:1;font:10px var(--mono);color:rgba(255,255,255,.35);pointer-events:none}
+body:not(.inmenu) #ver{display:none}
