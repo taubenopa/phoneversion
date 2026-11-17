@@ -162,9 +162,33 @@ function drawWeapon(P,now){
   y:-.06*(1-ae)+VM.sx*.002*calm,p:-(w?k*kick*.07:0)-sink*.5+air*.03,r:(.05*(1-ae))};
  if((w==3||w==14||w==16)&&fl>0){T.x+=(Math.random()-.5)*.003;T.ty+=(Math.random()-.5)*.003}
  drawModel(M,T,typeof skinOf=='function'?skinOf(w):null);
- const m=proj(xf(M.mz,T));VM.mx=m[0];VM.my=m[1];
+ const mzp=d=>proj(xf([M.mz[0],M.mz[1],M.mz[2]+d],T)),m=proj(xf(M.mz,T)),mf=mzp(.05);VM.mx=mf[0];VM.my=mf[1];   // Schuss-Spur startet knapp vor dem Lauf
  const gl=(c,r,a,px,py)=>{px=px==null?m[0]:px;py=py==null?m[1]:py;const q=x.createRadialGradient(px,py,0,px,py,r);q.addColorStop(0,c);q.addColorStop(1,'rgba(0,0,0,0)');x.globalAlpha=a;x.globalCompositeOperation='lighter';x.fillStyle=q;x.beginPath();x.arc(px,py,r,0,7);x.fill();x.globalAlpha=1;x.globalCompositeOperation='source-over'};
  if(w==5)gl('#3df',10+Math.sin(now*9)*2,.5);if(w==6)gl('#5f5',16+Math.sin(now*6)*4,.55);if(w==12)gl('#3cf',8+Math.sin(now*8)*2,.45);if(w==11)gl('#6cf',7,.45);
  if(w==9){const h=4+Math.random()*3;x.fillStyle='#fa2';x.beginPath();x.moveTo(m[0]-2,m[1]);x.quadraticCurveTo(m[0]+(Math.random()-.5)*3,m[1]-h,m[0]+2,m[1]);x.fill()}
- if(fl>0&&FLR[w]){const R=FLR[w]*.7,c=w==5?'#3df':w==6?'#5f5':w==11?'#6cf':w==12?'#3cf':'#ffb347';gl(c,R*1.4,.85);star(m[0],m[1],R*.6)}
+ if(fl>0&&FLR[w])flash(w,w==5?'#3df':w==6?'#5f5':w==11?'#6cf':w==12?'#3cf':'#ffb347',mzp,M,T);
 }
+
+// Muendungsfeuer: sitzt VOR dem Lauf und schiesst nach vorne raus (Flammenkegel + seitliche Zacken + Leuchten), jedes Mal etwas anders
+let FLS=0,FLP=0;
+function flash(w,c,mzp,M,T){
+ if(fl>FLP+.001)FLS=Math.random()*1e4;FLP=fl;
+ const R=FLR[w]*.7,a=Math.min(1,fl/.06),rnd=k=>{const v=Math.sin(FLS*(k+1)*12.9898)*43758.5453;return v-Math.floor(v)};
+ const L=.07+.06*(R/30),p0=mzp(.004),p1=mzp(.02+L*.3),p2=mzp(.02+L*(1+.4*rnd(1)));
+ const toR=h=>{const q=c.length==4?[...c.slice(1)].map(v=>parseInt(v+v,16)):[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));return'rgba('+q.join(',')+','+h+')'};
+ x.save();x.globalCompositeOperation='lighter';
+ // Leuchten um die Muendung
+ const gr=R*1.5*(.85+.3*rnd(2)),g=x.createRadialGradient(p1[0],p1[1],0,p1[0],p1[1],gr);g.addColorStop(0,toR(.55*a));g.addColorStop(.4,toR(.18*a));g.addColorStop(1,toR(0));x.fillStyle=g;x.fillRect(p1[0]-gr,p1[1]-gr,gr*2,gr*2);
+ // Flammenkegel nach vorne
+ const dx=p2[0]-p0[0],dy=p2[1]-p0[1],dl=Math.hypot(dx,dy)||1,nx=-dy/dl,ny=dx/dl,wd=R*.32*(.8+.4*rnd(3));
+ const cone=(q0,q1,w0,col0,col1)=>{const lg=x.createLinearGradient(q0[0],q0[1],q1[0],q1[1]);lg.addColorStop(0,col0);lg.addColorStop(1,col1);x.fillStyle=lg;x.beginPath();x.moveTo(q0[0]+nx*w0,q0[1]+ny*w0);
+  x.quadraticCurveTo((q0[0]+q1[0])/2+nx*w0*.9,(q0[1]+q1[1])/2+ny*w0*.9,q1[0],q1[1]);x.quadraticCurveTo((q0[0]+q1[0])/2-nx*w0*.9,(q0[1]+q1[1])/2-ny*w0*.9,q0[0]-nx*w0,q0[1]-ny*w0);x.closePath();x.fill()};
+ cone(p0,p2,wd,'rgba(255,255,240,'+a+')',toR(0));
+ cone(p0,p1,wd*.55,'rgba(255,255,255,'+a+')','rgba(255,240,200,'+(.4*a)+')');
+ // seitliche Zacken (in 3D um den Lauf verteilt)
+ const n=4,base=rnd(4)*6.283;for(let k=0;k<n;k++){const an=base+k*6.283/n,len=.025+.03*rnd(5+k),q=proj(xf([M.mz[0]+Math.cos(an)*len,M.mz[1]+Math.sin(an)*len,M.mz[2]+.02+L*.25],T));
+  const ex=q[0]-p1[0],ey=q[1]-p1[1],el=Math.hypot(ex,ey)||1,sw=wd*.35;const lg=x.createLinearGradient(p1[0],p1[1],q[0],q[1]);lg.addColorStop(0,'rgba(255,250,220,'+(.9*a)+')');lg.addColorStop(1,toR(0));x.fillStyle=lg;
+  x.beginPath();x.moveTo(p1[0]-ey/el*sw,p1[1]+ex/el*sw);x.lineTo(q[0],q[1]);x.lineTo(p1[0]+ey/el*sw,p1[1]-ex/el*sw);x.closePath();x.fill()}
+ // heller Kern
+ x.fillStyle='rgba(255,255,255,'+(.95*a)+')';x.beginPath();x.arc(p0[0]+(p1[0]-p0[0])*.4,p0[1]+(p1[1]-p0[1])*.4,Math.max(1,R*.12),0,7);x.fill();
+ x.restore()}
