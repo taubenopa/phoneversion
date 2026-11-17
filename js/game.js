@@ -260,9 +260,9 @@ function sim(dt){
 let AC,mst,nb,muted=0,paused=0,hm=0,shk=0;const TR=[],PT=[];
 // ---------- Schuss-Spuren (Tracer) in 3D ----------
 // Stil je Waffe: [Kernfarbe, Leuchtfarbe r,g,b, Breite, Tempo (Felder/s), Laenge der Spur, Nachleuchten in s, Art]
-const TRS={1:['#fff6d0','255,190,80',1.5,70,3.2,0],2:['#ffe6b0','255,170,70',1.1,80,2.2,0],3:['#fff3b8','255,175,60',1.6,75,3.8,0],7:['#ffffff','170,220,255',2.2,150,9,.6],
- 8:['#fff0c0','255,200,90',2,70,3.6,.1],11:['#e8fbff','90,200,255',1.8,0,0,.18,'z'],12:['#ffffff','70,230,255',2.4,0,0,.55,'r'],13:['#ffe9a0','255,185,70',1.7,78,4,0],
- 14:['#fff1b5','255,200,90',1.4,72,3,0],16:['#ffd480','255,150,40',1.7,82,4.2,0]};
+const TRS={1:['#fff6d0','255,190,80',1.4,150,2,0],2:['#ffe6b0','255,170,70',1,170,1.4,0],3:['#fff3b8','255,175,60',1.4,165,2.2,0],7:['#ffffff','170,220,255',2,320,6,.45],
+ 8:['#fff0c0','255,200,90',1.8,150,2.4,.08],11:['#e8fbff','90,200,255',1.8,0,0,.18,'z'],12:['#ffffff','70,230,255',2.4,0,0,.55,'r'],13:['#ffe9a0','255,185,70',1.5,170,2.4,0],
+ 14:['#fff1b5','255,200,90',1.3,160,1.8,0],16:['#ffd480','255,150,40',1.5,180,2.4,0]};
 const BT=[],BS=[],CAM={px:0,py:0,dx:1,dy:0,plx:0,ply:.77};
 function addTr(b,own){if(BT.length>140)BT.shift();const[x,y,z,ex,ey,ez,w,o,h]=b,L=Math.hypot(ex-x,ey-y)||.01;BT.push({x,y,z,ex,ey,ez,w,own,L,t:0,h});
  if(!h&&L>.3){const k=(L-.06)/L;puff(x+(ex-x)*k,y+(ey-y)*k,ez,own?4:3,['#fff','#ffe08a','#aaa','#777'],.9,{l:.25,m:.25,s:.025})}}
@@ -272,7 +272,7 @@ function drawTr(){
   const P=u=>{const f=u/q.L;return prj(q.x+(q.ex-q.x)*f,q.y+(q.ey-q.y)*f,q.z+(q.ez-q.z)*f)};let a=P(u0),b=P(u1);const NZ=.06;
   if(a[1]<NZ&&b[1]<NZ)return;if(a[1]<NZ){const t=(NZ-a[1])/(b[1]-a[1]);a=a.map((v,i)=>v+(b[i]-v)*t);u0+=(u1-u0)*t}else if(b[1]<NZ){const t=(NZ-b[1])/(a[1]-b[1]);b=b.map((v,i)=>v+(a[i]-v)*t);u1+=(u0-u1)*t}
   const S2=p=>[VW/2*(1+p[0]/p[1]),HZ+(EY-p[2])*VH/p[1]];let A=S2(a),B=S2(b);
-  if(q.own&&VM.mx){const ma=Math.max(0,1-u0/3.2)**2,mb=Math.max(0,1-u1/3.2)**2;A=[A[0]*(1-ma)+VM.mx*ma,A[1]*(1-ma)+VM.my*ma];B=[B[0]*(1-mb)+VM.mx*mb,B[1]*(1-mb)+VM.my*mb]}   // eigene Schuesse starten an der Muendung
+
   if(glow){x.strokeStyle='rgba('+glow+','+(al*.42).toFixed(3)+')';x.lineWidth=lw*3.6;x.beginPath();x.moveTo(A[0],A[1]);x.lineTo(B[0],B[1]);x.stroke()}
   x.strokeStyle=c;x.globalAlpha=al;x.lineWidth=lw;x.beginPath();x.moveTo(A[0],A[1]);x.lineTo(B[0],B[1]);x.stroke();x.globalAlpha=1};
  x.save();x.globalCompositeOperation='lighter';x.lineCap='round';
@@ -315,7 +315,9 @@ function jingle(b){if(b){tone(110,95,.6,'sawtooth',.3);tone(104,88,.6,'sawtooth'
 function spark(n,c){for(let k=0;k<n;k++){const a=Math.random()*6.28,s=40+Math.random()*90;PT.push({x:VW/2,y:VH/2,vx:Math.cos(a)*s,vy:Math.sin(a)*s-20,g:200,l:.2+Math.random()*.2,c:c||'#fd6'})}}
 function shotFx(w){shk=Math.max(shk,([0,.6,2.4,.8,2.2,.3,3.6,3,1.4,.3,1.8,.6,3.2,1,.5,1.3,.6][w]||0));
  if(TRS[w]){const W=WP[w],sp=W.sp*(me.ads?(W.ads!=null?W.ads:.3):1),z=.5+(me.z||0);
-  for(let k=0;k<W.n;k++){const a=me.a+(Math.random()-.5)*sp*2,rx=Math.cos(a),ry=Math.sin(a),d=hitDist(me.x,me.y,rx,ry,W,null);addTr([me.x,me.y,z,me.x+rx*d.d,me.y+ry*d.d,d.h?.45:z,w,id,d.h],1)}
+  const C=CAM,d0=.55,cx=VM.mx?(2*VM.mx/VW-1):.3,sx0=C.px+(C.dx+C.plx*cx)*d0,sy0=C.py+(C.dy+C.ply*cx)*d0,sz0=EY-((VM.my||VH*.7)-HZ)*d0/VH;
+  for(let k=0;k<W.n;k++){const a=me.a+(Math.random()-.5)*sp*2,rx=Math.cos(a),ry=Math.sin(a),d=hitDist(me.x,me.y,rx,ry,W,null),ex=me.x+rx*d.d,ey=me.y+ry*d.d;
+   if(Math.hypot(ex-sx0,ey-sy0)>.3)addTr([sx0,sy0,sz0,ex,ey,d.h?.45:z,w,id,d.h],1)}
   return}
  if(w==9)for(let k=0;k<5;k++)PT.push({x:VM.mx+(Math.random()-.5)*10,y:VM.my+10,vx:(Math.random()-.5)*50,vy:-(120+Math.random()*120),g:-10,l:.25+Math.random()*.15,c:Math.random()<.5?'#f80':'#fd3',s:3+Math.random()*3});
 }
