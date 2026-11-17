@@ -260,9 +260,9 @@ function sim(dt){
 let AC,mst,nb,muted=0,paused=0,hm=0,shk=0;const TR=[],PT=[];
 // ---------- Schuss-Spuren (Tracer) in 3D ----------
 // Stil je Waffe: [Kernfarbe, Leuchtfarbe r,g,b, Breite, Tempo (Felder/s), Laenge der Spur, Nachleuchten in s, Art]
-const TRS={1:['#fff6d0','255,190,80',1.4,150,2,0],2:['#ffe6b0','255,170,70',1,170,1.4,0],3:['#fff3b8','255,175,60',1.4,165,2.2,0],7:['#ffffff','170,220,255',2,320,6,.45],
- 8:['#fff0c0','255,200,90',1.8,150,2.4,.08],11:['#e8fbff','90,200,255',1.8,0,0,.18,'z'],12:['#ffffff','70,230,255',2.4,0,0,.55,'r'],13:['#ffe9a0','255,185,70',1.5,170,2.4,0],
- 14:['#fff1b5','255,200,90',1.3,160,1.8,0],16:['#ffd480','255,150,40',1.5,180,2.4,0]};
+const TRS={1:['#fff6d0','255,190,80',1.4,260,2.4,0],2:['#ffe6b0','255,170,70',1,280,1.6,0],3:['#fff3b8','255,175,60',1.4,300,2.6,0],7:['#ffffff','170,220,255',2,420,6,.35],
+ 8:['#fff0c0','255,200,90',1.8,260,2.6,.06],11:['#e8fbff','90,200,255',1.8,0,0,.15,'z'],12:['#ffffff','70,230,255',2.4,0,0,.45,'r'],13:['#ffe9a0','255,185,70',1.5,300,2.6,0],
+ 14:['#fff1b5','255,200,90',1.3,290,2,0],16:['#ffd480','255,150,40',1.5,320,2.6,0]};
 const BT=[],BS=[],CAM={px:0,py:0,dx:1,dy:0,plx:0,ply:.77};
 function addTr(b,own){if(BT.length>140)BT.shift();const[x,y,z,ex,ey,ez,w,o,h]=b,L=Math.hypot(ex-x,ey-y)||.01;BT.push({x,y,z,ex,ey,ez,w,own,L,t:0,h});
  if(!h&&L>.3){const k=(L-.06)/L;puff(x+(ex-x)*k,y+(ey-y)*k,ez,own?4:3,['#fff','#ffe08a','#aaa','#777'],.9,{l:.25,m:.25,s:.025})}}
@@ -281,7 +281,7 @@ function drawTr(){
   if(kind=='r'){if(q.t>hold){BT.splice(i,1);continue}const al=(1-q.t/hold)**1.5;seg(q,0,q.L,c,lw*(1+q.t*3),al,g);continue}
   const head=Math.min(q.L,q.t*v),tail=Math.max(0,head-len),done=tail>=q.L;
   if(hold){const al=Math.max(0,1-q.t/hold)*.35;if(al>0)seg(q,0,head,'rgba(220,230,255,1)',lw*.5,al,null)}
-  if(!done)seg(q,tail,head,c,lw,1,g);
+  if(!done)seg(q,tail,head,c,lw,Math.max(.35,1-q.t*6),g);
   if(done&&(!hold||q.t>hold))BT.splice(i,1)}
  x.restore()}
 function ac(){if(!AC){AC=new AudioContext();mst=AC.createGain();mst.gain.value=.85;const c=AC.createDynamicsCompressor();mst.connect(c);c.connect(AC.destination);
@@ -317,7 +317,9 @@ function shotFx(w){shk=Math.max(shk,([0,.6,2.4,.8,2.2,.3,3.6,3,1.4,.3,1.8,.6,3.2
  if(TRS[w]){const W=WP[w],sp=W.sp*(me.ads?(W.ads!=null?W.ads:.3):1),z=.5+(me.z||0);
   const C=CAM,d0=.55,cx=VM.mx?(2*VM.mx/VW-1):.3,sx0=C.px+(C.dx+C.plx*cx)*d0,sy0=C.py+(C.dy+C.ply*cx)*d0,sz0=EY-((VM.my||VH*.7)-HZ)*d0/VH;
   for(let k=0;k<W.n;k++){const a=me.a+(Math.random()-.5)*sp*2,rx=Math.cos(a),ry=Math.sin(a),d=hitDist(me.x,me.y,rx,ry,W,null),ex=me.x+rx*d.d,ey=me.y+ry*d.d;
-   if(Math.hypot(ex-sx0,ey-sy0)>.3)addTr([sx0,sy0,sz0,ex,ey,d.h?.45:z,w,id,d.h],1)}
+   // Spur folgt dem Fadenkreuz auch beim Hoch-/Runterschauen; beim Runterschauen endet sie im Boden
+   const pt=me.pt||0;let dd=d.d,ez=EY+pt*dd/VH;if(pt<-.5){const g=EY*VH/-pt;if(g<dd){dd=g;ez=0}}ez=d.h?Math.max(.15,Math.min(.9,ez)):Math.max(0,Math.min(3,ez));
+   const fx=me.x+rx*dd,fy=me.y+ry*dd;if(Math.hypot(fx-sx0,fy-sy0)>.3)addTr([sx0,sy0,sz0,fx,fy,ez,w,id,d.h],1)}
   return}
  if(w==9)for(let k=0;k<5;k++)PT.push({x:VM.mx+(Math.random()-.5)*10,y:VM.my+10,vx:(Math.random()-.5)*50,vy:-(120+Math.random()*120),g:-10,l:.25+Math.random()*.15,c:Math.random()<.5?'#f80':'#fd3',s:3+Math.random()*3});
 }
