@@ -808,7 +808,7 @@ function loop(t){
 }
 function frame(t){
  dt=Math.min(.05,Math.max(0,(t-last)/1000)||0);last=t;
- if(mode){
+ if(mode){if(inMenuCls!==0){inMenuCls=0;document.body.classList.remove('inmenu')}
   if(pmOpen)padMenu();padPoll();
   if(mode==1){
     if(story)storyTick(dt);else if(!paused)sim(dt);if(!dm&&!story&&wave>best){best=wave;try{localStorage.hfBest=wave}catch(e){}}S={t:'s',m:cur,dm:dm,ev:EV,b:BS,p:players,e:E,j:J,k:PK,wv:wave,z:ZN,st:story?SS:undefined};

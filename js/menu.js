@@ -3,7 +3,7 @@ let peerMade=0,curPane='';
 function go(name){
  if(curPane===name)name='';curPane=name;
  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id=='p-'+name));
- document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go==name));
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go==name));document.body.classList.toggle('panopen',!!name);
  if(name=='story'||name=='host'){storyLobby=name=='story'?1:0;ul();if(!peerMade){peerMade=1;mkPeer()}}
  try{click()}catch(e){}
 }
@@ -84,25 +84,37 @@ function logoTick(){
 
 // ---------- Vorschau: Kamerafahrt durch die Karten, waehrend das Menue offen ist ----------
 const ATT={maps:[0,6,8,7,4],k:-1,t:0,s:0,fade:1,cam:{x:2.5,y:2.5,a:0,pt:0,z:0},S:null,len:0,seg:null,
- path:{0:[[2.4,2.4],[21.6,2.4],[21.6,21.6],[2.4,21.6]],6:[[5.5,3.2],[5.5,20.8],[12,21.9],[18.5,20.8],[18.5,3.2],[12,2.1]],7:[[6,6],[18,6],[18,18],[6,18]],8:[[14.5,7.5],[2,7.5],[2,15.5],[9.5,15.5],[9.5,7.5],[17,7.5],[17,2.5],[14.5,3.5]],4:[[9.5,3],[14.5,3],[14.5,21],[9.5,21]]}};
+ path:{0:[[16.5,12.0],[15.18,15.18],[12.0,16.5],[8.82,15.18],[7.5,12.0],[8.82,8.82],[12.0,7.5],[15.18,8.82]],6:[[5.5,3.4],[5.5,20.6],[12,21.6],[18.3,20.6],[18.3,3.4],[12,2.6]],7:[[5.5,9.2],[18.5,9.2],[18.5,14.8],[5.5,14.8]],8:[[16.8,7.9],[9,7.9],[3.5,7.9],[3.5,14],[3.5,20.5],[5,22.5],[10,22.5],[15.5,22.5],[16.8,20],[16.8,13]],4:[[10,3.5],[14,3.5],[14,20.5],[10,20.5]]}};
 const still=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-function attAt(s){s=((s%ATT.len)+ATT.len)%ATT.len;for(const q of ATT.seg){if(s<=q.l)return[q.a[0]+(q.b[0]-q.a[0])*s/q.l,q.a[1]+(q.b[1]-q.a[1])*s/q.l];s-=q.l}return ATT.seg[0].a}
+// Weiche Kamerafahrt: geschlossene Catmull-Rom-Kurve durch die Wegpunkte, gleichmaessiges Tempo, ruhiger Blick nach vorne
+const ATT_DUR=15,ATT_FADE=1.3,ATT_SPD=1.05;
+function crP(P,i,t){const n=P.length,a=P[(i-1+n)%n],b=P[i%n],c=P[(i+1)%n],d=P[(i+2)%n],t2=t*t,t3=t2*t;
+ return[0,1].map(k=>.5*(2*b[k]+(-a[k]+c[k])*t+(2*a[k]-5*b[k]+4*c[k]-d[k])*t2+(-a[k]+3*b[k]-3*c[k]+d[k])*t3))}
+function attBuild(P0){const P=[];for(let i=0;i<P0.length;i++){const a=P0[i],b=P0[(i+1)%P0.length],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/2.5));for(let k=0;k<n;k++)P.push([a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n])}   // lange Strecken unterteilen, damit die Kurve nicht ausschwingt
+ const pts=[];for(let i=0;i<P.length;i++)for(let k=0;k<24;k++)pts.push(crP(P,i,k/24));const L=[0];for(let i=1;i<=pts.length;i++){const a=pts[i-1],b=pts[i%pts.length];L.push(L[i-1]+Math.hypot(b[0]-a[0],b[1]-a[1]))}ATT.pts=pts;ATT.cum=L;ATT.len=L[L.length-1]}
+function attAt(s){const L=ATT.cum,n=ATT.pts.length;s=((s%ATT.len)+ATT.len)%ATT.len;let lo=0,hi=n;while(hi-lo>1){const m=(lo+hi)>>1;if(L[m]<=s)lo=m;else hi=m}const a=ATT.pts[lo],b=ATT.pts[(lo+1)%n],f=(s-L[lo])/((L[lo+1]-L[lo])||1);return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]}
 function attSetup(){
- ATT.k=(ATT.k+1)%ATT.maps.length;const mi=ATT.maps[ATT.k];loadMap(mi);const P=ATT.path[mi];ATT.seg=P.map((a,i)=>{const b=P[(i+1)%P.length];return{a,b,l:Math.hypot(b[0]-a[0],b[1]-a[1])}});ATT.len=ATT.seg.reduce((n,q)=>n+q.l,0);ATT.t=0;ATT.s=0;ATT.fade=1;
- const T=[35,30,31,20,32,21,33,22,34],e=[];for(let k=0;k<T.length;k++)e.push({id:9000+ATT.k*20+k,t:T[k],o:ATT.len*(k+.5)/T.length,x:0,y:0,ph:k,mv:1,fl:0,dead:0});
- ATT.S={p:[],e,j:[],k:[],wv:0};const p=attAt(0),q=attAt(2);ATT.cam.x=p[0];ATT.cam.y=p[1];ATT.cam.a=Math.atan2(q[1]-p[1],q[0]-p[0]);
+ ATT.k=(ATT.k+1)%ATT.maps.length;const mi=ATT.maps[ATT.k];loadMap(mi);attBuild(ATT.path[mi]);ATT.t=0;ATT.s=0;ATT.fade=1;
+ const T=[31,33,35,34],e=[];for(let k=0;k<T.length;k++){const o=ATT.len*(k+.6)/T.length,a=attAt(o),b=attAt(o+.5);let ex=a[0]+(12-a[0])*.18,ey=a[1]+(12-a[1])*.18;if(sol(ex,ey)){ex=a[0];ey=a[1]}
+  e.push({id:9000+ATT.k*20+k,t:T[k],x:ex,y:ey,ph:k,mv:0,fl:0,dead:0})}
+ ATT.S={p:[],e,j:[],k:[],wv:0};const p=attAt(0),q=attAt(2.5);ATT.cam.x=p[0];ATT.cam.y=p[1];ATT.cam.a=Math.atan2(q[1]-p[1],q[0]-p[0]);
+ const cap=$('attcap');if(cap){cap.classList.remove('on');setTimeout(()=>{const o=$('mp')&&$('mp').options[mi];cap.querySelector('b').textContent=o?o.textContent:MAPS[mi].nm;cap.classList.add('on')},700)}
 }
+let inMenuCls=-1;
 function attract(t){
+ if(inMenuCls!==1){inMenuCls=1;document.body.classList.add('inmenu')}
  logoTick();padMenu();
  if(still&&ATT.S&&frameN>3)return;
- if(!ATT.S||ATT.t>17)attSetup();
- ATT.t+=dt;ATT.s+=dt*1.5;ATT.fade=ATT.t<.8?1-ATT.t/.8:ATT.t>16.2?(ATT.t-16.2)/.8:0;
- const c=ATT.cam,p=attAt(ATT.s),q=attAt(ATT.s+2.2);c.x=p[0];c.y=p[1];
- let da=Math.atan2(q[1]-p[1],q[0]-p[0])-c.a;da=Math.atan2(Math.sin(da),Math.cos(da));c.a+=da*Math.min(1,dt*2.2);c.pt=Math.sin(ATT.t*.5)*10;
- for(const e of ATT.S.e){e.o-=dt*.8;const a=attAt(e.o);let ex=a[0]+(12-a[0])*.14,ey=a[1]+(12-a[1])*.14;if(sol(ex,ey)){ex=a[0];ey=a[1]}e.x=ex;e.y=ey;e.ph+=dt*4}
- const sm=me,sS=S;me=c;S=ATT.S;attractOn=1;bob+=dt*5;
- try{render()}finally{attractOn=0;me=sm;S=sS}
- if(ATT.fade>0){x.fillStyle='rgba(0,0,0,'+Math.min(1,ATT.fade).toFixed(2)+')';x.fillRect(0,0,VW,VH)}
+ if(!ATT.S||ATT.t>ATT_DUR)attSetup();
+ ATT.t+=dt;ATT.s+=dt*ATT_SPD;
+ const sm=k=>k*k*(3-2*k);ATT.fade=ATT.t<ATT_FADE?1-sm(ATT.t/ATT_FADE):ATT.t>ATT_DUR-ATT_FADE?sm((ATT.t-(ATT_DUR-ATT_FADE))/ATT_FADE):0;
+ if(ATT.t>ATT_DUR-ATT_FADE-.3){const cap=$('attcap');if(cap)cap.classList.remove('on')}
+ const c=ATT.cam,p=attAt(ATT.s),q=attAt(ATT.s+3);c.x=p[0];c.y=p[1];
+ let da=Math.atan2(q[1]-p[1],q[0]-p[0])-c.a;da=Math.atan2(Math.sin(da),Math.cos(da));c.a+=da*Math.min(1,dt*1.4);c.pt=Math.sin(ATT.t*.35)*4;
+ for(const e of ATT.S.e)e.ph+=dt*1.5;
+ const sm2=me,sS=S;me=c;S=ATT.S;attractOn=1;const sb=bob;bob=0;
+ try{render()}finally{attractOn=0;me=sm2;S=sS;bob=sb}
+ if(ATT.fade>0){x.fillStyle='rgba(0,0,0,'+Math.min(1,ATT.fade).toFixed(3)+')';x.fillRect(0,0,VW,VH)}
 }
 
 // ---------- Controller im Menue: Steuerkreuz/Stick auf-ab, A = auswaehlen, B = zurueck ----------

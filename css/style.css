@@ -166,3 +166,30 @@ body.touch #pm .pmbox{width:min(520px,100%)}body.touch #pm button{min-height:40p
 #skp button.sk.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
 #skp button.sk img{width:88px;height:44px;object-fit:contain}#skp button.sk b{font-size:10px}#skp button.sk i{font-style:normal;font-size:9px;color:var(--rc)}
 @media(max-width:560px){#chests{grid-template-columns:1fr 1fr}}
+/* ---------- Kartenauswahl mit Vorschau ---------- */
+.maps{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:10px}
+.mapc{all:unset;cursor:pointer;display:flex;flex-direction:column;background:#120d0c;border:1px solid var(--line);overflow:hidden;transition:transform .15s,border-color .15s,box-shadow .15s;position:relative}
+.mapc:hover,.mapc:focus-visible{transform:translateY(-2px);border-color:#6b4a3a}
+.mapc.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 6px 18px rgba(255,190,60,.18)}
+.mapc.on::after{content:"✓";position:absolute;top:6px;right:6px;width:20px;height:20px;display:grid;place-items:center;background:var(--gold);color:#1a1004;font:800 12px/1 var(--mono);border-radius:50%}
+.mi{display:block;aspect-ratio:16/9;overflow:hidden;background:#000}
+.mi img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto;transition:transform .4s ease}
+.mapc:hover .mi img,.mapc.on .mi img{transform:scale(1.06)}
+.mt{display:flex;flex-direction:column;gap:3px;padding:7px 8px 8px}
+.mt b{font:800 12.5px/1.2 var(--mono);color:var(--ash)}.mapc.on .mt b{color:var(--gold)}
+.md{font-size:10.5px;line-height:1.35;color:var(--dim)}
+.mg{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}.mg i{font-style:normal;font-size:9px;padding:1px 5px;border:1px solid #3a2a24;color:#c9b6a8;background:#1b1412}
+.grid3.g2{grid-template-columns:1fr 1fr}
+@media(max-height:500px){.maps{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}.md{display:none}}
+
+/* ---------- Menue-Hintergrund ruhiger: Bild fuellt den Schirm, sanfte Abdunklung, Kartenname unten rechts ---------- */
+body.inmenu #cv{object-fit:cover}
+#m{background:radial-gradient(ellipse at 70% 45%,rgba(0,0,0,0) 0,rgba(0,0,0,.35) 75%,rgba(0,0,0,.6) 100%),linear-gradient(90deg,rgba(10,7,8,.94) 0,rgba(10,7,8,.8) 28%,rgba(10,7,8,.22) 62%,rgba(10,7,8,.04) 100%)}
+#nav button::before{opacity:0}
+#nav button:hover::before,#nav button:focus-visible::before{opacity:1}
+#attcap{position:fixed;right:clamp(16px,3vw,40px);bottom:clamp(14px,3vh,32px);z-index:1;pointer-events:none;text-align:right;opacity:0;transition:opacity 1s ease;font-family:var(--mono)}
+#attcap.on{opacity:1}
+#attcap small{display:block;font-size:11px;color:rgba(255,255,255,.5)}
+#attcap b{display:block;font-size:clamp(15px,2vw,22px);color:rgba(255,255,255,.85);text-shadow:0 2px 12px rgba(0,0,0,.8)}
+body:not(.inmenu) #attcap{display:none}
+body.panopen #attcap{opacity:0}
