@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>TAUBENGAME</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="stylesheet" href="css/style.css?v=202611172200"></head><body>
+<link rel="stylesheet" href="css/style.css?v=202611181130"></head><body>
 <div id="attcap"><small data-en="Preview">Vorschau</small><b></b></div>
 <canvas id="cv"></canvas>
 <div id="m">
@@ -38,6 +38,7 @@
    <button data-go="host"><b data-en="Co-op &amp; deathmatch">Koop &amp; Deathmatch</b><i data-en="Waves and bosses, alone or with friends">Wellen und Bosse, allein oder mit Freunden</i></button>
    <button data-go="join"><b data-en="Join">Beitreten</b><i data-en="Enter the host's room code">Raum-Code vom Host eingeben</i></button>
    <button data-go="guns"><b data-en="Case shop">Case-Shop</b><i id="ls" class="dyn">Coins</i></button>
+   <button data-go="acc"><b data-en="Account">Account</b><i class="dyn"><span id="accb">Gast</span></i></button>
    <button data-go="opts"><b data-en="Settings">Einstellungen</b><i data-en="Volume, language, controls">Lautstärke, Sprache, Steuerung</i></button>
   </nav>
   <div class="foot">
@@ -95,6 +96,11 @@
    <div id="skp" class="dyn"></div>
    <p class="hint" data-en="Story mode stays the same: you start with the pistol and get weapons from the case opening after every level. Every character also has an ultimate on Q.">Im Story-Modus bleibt alles wie gehabt: Du startest mit der Pistole und bekommst Waffen über das Case Opening nach jedem Level. Jeder Charakter hat zusätzlich eine Ulti auf Q.</p>
   </section>
+  <section class="pane" id="p-acc">
+   <h2 data-en="Account">Account</h2>
+   <p class="lead" data-en="Log in to keep your coins, weapons, skins and story progress on every device.">Log dich ein, damit Coins, Waffen, Skins und Story-Stand auf jedem Gerät gleich sind.</p>
+   <div id="acc" class="dyn"></div>
+  </section>
   <section class="pane" id="p-opts">
    <h2 data-en="Settings">Einstellungen</h2>
    <h3 data-en="Language">Sprache</h3><div class="row langrow"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -125,22 +131,24 @@
  <details><summary data-en="Controls">Steuerung</summary><div id="pm-ctl"></div></details>
  <button id="pm-quit" class="dyn">Zum Hauptmenü</button>
 </div></div>
-<script src="js/peerjs.min.js?v=202611172200"></script>
-<script src="js/lang.js?v=202611172200"></script>
-<script src="js/game.js?v=202611172200"></script>
-<script src="js/fx.js?v=202611172200"></script>
-<script src="js/hafen.js?v=202611172200"></script>
-<script src="js/deco3d.js?v=202611172200"></script>
-<script src="js/vm.js?v=202611172200"></script>
-<script src="js/skins.js?v=202611172200"></script>
-<script src="js/story.js?v=202611172200"></script>
-<script src="js/ult.js?v=202611172200"></script>
-<script src="js/gore.js?v=202611172200"></script>
-<script src="js/screams.js?v=202611172200"></script>
-<script src="js/shop.js?v=202611172200"></script>
-<script src="js/menu.js?v=202611172200"></script>
-<script src="js/mappick.js?v=202611172200"></script>
-<script src="js/sandbox.js?v=202611172200"></script>
-<script src="js/touch.js?v=202611172200"></script>
-<script>boot();shopInit();mapPickInit()</script>
+<script src="js/peerjs.min.js?v=202611181130"></script>
+<script src="js/lang.js?v=202611181130"></script>
+<script src="js/game.js?v=202611181130"></script>
+<script src="js/fx.js?v=202611181130"></script>
+<script src="js/hafen.js?v=202611181130"></script>
+<script src="js/deco3d.js?v=202611181130"></script>
+<script src="js/vm.js?v=202611181130"></script>
+<script src="js/skins.js?v=202611181130"></script>
+<script src="js/story.js?v=202611181130"></script>
+<script src="js/ult.js?v=202611181130"></script>
+<script src="js/gore.js?v=202611181130"></script>
+<script src="js/screams.js?v=202611181130"></script>
+<script src="js/shop.js?v=202611181130"></script>
+<script src="js/firebase-config.js?v=202611181130"></script>
+<script src="js/account.js?v=202611181130"></script>
+<script src="js/menu.js?v=202611181130"></script>
+<script src="js/mappick.js?v=202611181130"></script>
+<script src="js/sandbox.js?v=202611181130"></script>
+<script src="js/touch.js?v=202611181130"></script>
+<script>boot();shopInit();mapPickInit();accInit()</script>
 </body></html>
