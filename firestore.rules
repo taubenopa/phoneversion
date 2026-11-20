@@ -1,9 +1,25 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Jeder darf nur seinen eigenen Speicherstand lesen und schreiben
+    // Admin ist nur der Spiel-Account "taube"
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email in ['taube@taubengame.app'];
+    }
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      // Jeder liest nur seinen eigenen Stand, der Admin alle
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      // Neuer Account: darf sich nicht selbst Sperr- oder Admin-Felder setzen
+      allow create: if request.auth != null && request.auth.uid == uid
+                    && !('banned' in request.resource.data)
+                    && !('banReason' in request.resource.data)
+                    && !('adm' in request.resource.data);
+      // Spieler speichert nur, solange er nicht gesperrt ist, und darf Sperre/Admin-Zähler nicht ändern
+      allow update: if isAdmin() || (request.auth != null && request.auth.uid == uid
+                    && resource.data.get('banned', false) == false
+                    && request.resource.data.get('banned', false) == false
+                    && request.resource.data.get('banReason', '') == resource.data.get('banReason', '')
+                    && request.resource.data.get('adm', 0) == resource.data.get('adm', 0));
+      allow delete: if isAdmin();
     }
   }
 }
