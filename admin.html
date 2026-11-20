@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>TAUBENGAME · Admin</title>
+<style>
+:root{--bg:#0c0909;--panel:#141010;--line:#2c2120;--ash:#e9ddd2;--dim:#9a8a7e;--ember:#ff6a2b;--gold:#ffd23f;--red:#ff5a4a;--green:#5fd18a;--mono:ui-monospace,"JetBrains Mono","Cascadia Mono",Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ash);font:14px/1.45 var(--mono)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:#211816;border:1px solid var(--line);padding:7px 12px}
+button:hover,button:focus-visible{border-color:var(--ember);background:#2c1f1b;outline:none}
+button.pri{background:var(--ember);border-color:var(--ember);color:#160a05;font-weight:700}
+button.pri:hover{background:var(--gold);border-color:var(--gold)}
+button.bad{border-color:#5a2020;background:#2a1010;color:#ffb4aa}
+input,select{background:#0d0a0a;border:1px solid var(--line);padding:7px 9px}
+input:focus,select:focus{outline:none;border-color:var(--gold)}
+header{display:flex;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(12,9,9,.96);z-index:2;flex-wrap:wrap}
+header h1{margin:0;font-size:17px;letter-spacing:.02em}header h1 span{color:var(--ember)}
+header .me{margin-left:auto;color:var(--dim);font-size:12px}
+main{padding:18px 20px 60px;max-width:1300px;margin:0 auto}
+.login{max-width:340px;margin:12vh auto 0;display:flex;flex-direction:column;gap:10px}
+.login h2{margin:0 0 4px;font-size:20px}.login p{margin:0;color:var(--dim);font-size:12px}
+.msg{min-height:1.3em;font-size:12px;color:var(--dim)}.msg.err{color:var(--red)}
+.stats{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:16px}
+.stats div{display:flex;flex-direction:column}.stats b{font-size:22px;color:var(--gold)}.stats span{font-size:11px;color:var(--dim)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tools input{flex:1;min-width:180px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-weight:600;font-size:11px;color:var(--dim);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid #1d1615;white-space:nowrap}
+tbody tr{cursor:pointer}tbody tr:hover{background:#171111}tbody tr.sel{background:#22160f}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;padding:1px 7px;font-size:11px;border:1px solid}
+.chip.ok{color:var(--green);border-color:#25523a}.chip.ban{color:var(--red);border-color:#5a2020;background:#2a1010}
+.on{color:var(--green)}
+aside{position:fixed;top:0;right:0;bottom:0;width:min(440px,100vw);background:var(--panel);border-left:2px solid var(--ember);transform:translateX(105%);transition:transform .2s ease;overflow:auto;z-index:3;padding:18px 18px 40px}
+aside.open{transform:none}
+aside h2{margin:0;font-size:20px;color:var(--gold)}aside .sub{color:var(--dim);font-size:12px;margin:2px 0 14px}
+aside h3{font-size:12px;color:var(--dim);font-weight:600;margin:18px 0 6px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.coins input{width:130px;font-size:18px;color:var(--gold)}
+.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px}
+.wgrid label{display:flex;gap:6px;align-items:center;font-size:12px;padding:2px 0;cursor:pointer}
+.wgrid input{accent-color:var(--ember);padding:0}
+.close{position:absolute;top:12px;right:12px;padding:4px 10px}
+.save{position:sticky;bottom:-40px;background:var(--panel);padding:12px 0 0;margin-top:18px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.empty{color:var(--dim);padding:30px 0;text-align:center}
+@media(max-width:760px){.hide-s{display:none}}
+</style>
+</head>
+<body>
+<header><h1>TAUBENGAME <span>Admin</span></h1><span class="me" id="me"></span></header>
+<main id="main"><div class="login" id="login">
+ <h2>Admin-Login</h2><p>Mit deinem Spiel-Account einloggen. Nur Admin-Accounts sehen hier etwas.</p>
+ <input id="ln" placeholder="Benutzername" autocomplete="username"><input id="lp" type="password" placeholder="Passwort" autocomplete="current-password">
+ <button class="pri" id="lb">Einloggen</button><div class="msg" id="lm"></div></div></main>
+<aside id="ed"></aside>
+<script src="js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+// TAUBENGAME Admin: Uebersicht ueber alle Accounts, Coins/Waffen/Skins/Story bearbeiten, sperren.
+// Zugriff regeln die Firestore-Regeln (nur Admin-Accounts duerfen alle Spielstaende lesen und aendern).
+const WN=['Faust','Pistole','Shotgun','MG','Rakete','Plasma','BFG','Sniper','Revolver','Flamme','Granate','Blitz','Rail','AK','UZI','Armbrust','Minigun','Desert Eagle','Doppelflinte','LMG','DMR','Burst-Gewehr','Tesla-Gewehr','Frostwerfer','Kreissäge','Molotow','Taubenwerfer','Harpune','Raketenschwarm','Schwarzes Loch','Shuriken','Lasergewehr'];
+const $=id=>document.getElementById(id),esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let db,auth,U=[],sel=null,sortK='updated',q='',unsub=null;
+firebase.initializeApp(FB_CONFIG);auth=firebase.auth();db=firebase.firestore();
+const mail=n=>n.toLowerCase()+'@taubengame.app';
+$('lb').onclick=login;$('lp').onkeydown=e=>{if(e.key=='Enter')login()};
+async function login(){const n=$('ln').value.trim(),p=$('lp').value;$('lm').className='msg';$('lm').textContent='Einen Moment …';
+ try{await auth.signInWithEmailAndPassword(mail(n),p)}catch(e){$('lm').className='msg err';$('lm').textContent=(e.code||'').includes('network')?'Keine Verbindung (Werbeblocker / Brave-Schutz ausschalten).':'Name oder Passwort falsch.'}}
+auth.onAuthStateChanged(u=>{if(!u){$('me').textContent='';return}
+ $('me').innerHTML=esc(u.email.split('@')[0])+' · <a href="#" id="lo" style="color:var(--dim)">ausloggen</a>';$('lo').onclick=e=>{e.preventDefault();if(unsub)unsub();auth.signOut().then(()=>location.reload())};
+ if(unsub)unsub();unsub=db.collection('users').onSnapshot(s=>{U=s.docs.map(d=>({id:d.id,...d.data()}));render();if(sel){const x=U.find(v=>v.id==sel);if(x&&!$('ed').dataset.dirty)edit(x.id)}},
+  e=>{$('main').innerHTML='<div class="login"><h2>Kein Admin-Zugang</h2><p>Dieser Account ist nicht als Admin eingetragen, oder die Firestore-Regeln sind noch nicht aktualisiert.</p><p style="margin-top:8px">'+esc(e.code||e.message)+'</p></div>'})});
+// Werte aus dem Speicherstand lesen
+const coins=v=>Math.floor(+((v.save||{}).hfCoins)||0);
+const inv=v=>{const m=+((v.save||{}).hfInv);return isNaN(m)||!m?3:m};
+const wcount=v=>{const m=inv(v);let c=0;for(let i=1;i<32;i++)if(m>>i&1)c++;return c};
+const skins=v=>{try{return Object.keys(JSON.parse((v.save||{}).hfSkins||'{}')).length}catch(e){return 0}};
+const story=v=>{try{const s=JSON.parse((v.save||{}).hfStory||'null');return s&&s.lv?s.lv:0}catch(e){return 0}};
+const best=v=>+((v.save||{}).hfBest)||0;
+const ago=t=>{if(!t)return'–';const s=(Date.now()-t)/1000;return s<90?'gerade eben':s<3600?Math.round(s/60)+' Min':s<86400?Math.round(s/3600)+' Std':Math.round(s/86400)+' Tg'};
+function render(){
+ const L=U.filter(v=>!q||(v.name||'').toLowerCase().includes(q)).sort((a,b)=>sortK=='name'?(a.name||'').localeCompare(b.name||''):sortK=='coins'?coins(b)-coins(a):sortK=='weapons'?wcount(b)-wcount(a):(b.updated||0)-(a.updated||0));
+ const tot=U.reduce((s,v)=>s+coins(v),0),bans=U.filter(v=>v.banned).length,act=U.filter(v=>Date.now()-(v.updated||0)<86400000).length;
+ $('main').innerHTML='<div class="stats"><div><b>'+U.length+'</b><span>Accounts</span></div><div><b>'+act+'</b><span>in den letzten 24 Std aktiv</span></div><div><b>'+tot.toLocaleString('de')+'</b><span>Coins insgesamt</span></div><div><b>'+bans+'</b><span>gesperrt</span></div></div>'+
+  '<div class="tools"><input id="qs" placeholder="Name suchen" value="'+esc(q)+'"><select id="so"><option value="updated">Zuletzt aktiv</option><option value="coins">Meiste Coins</option><option value="weapons">Meiste Waffen</option><option value="name">Name A–Z</option></select></div>'+
+  (L.length?'<table><thead><tr><th>Name</th><th class="num">Coins</th><th class="num">Waffen</th><th class="num hide-s">Skins</th><th class="num hide-s">Story</th><th class="num hide-s">Rekord</th><th class="hide-s">Zuletzt</th><th>Status</th></tr></thead><tbody>'+
+  L.map(v=>'<tr data-id="'+v.id+'"'+(v.id==sel?' class="sel"':'')+'><td>'+esc(v.name)+'</td><td class="num">'+coins(v).toLocaleString('de')+'</td><td class="num">'+wcount(v)+'/31</td><td class="num hide-s">'+skins(v)+'</td><td class="num hide-s">'+(story(v)?'Level '+story(v):'–')+'</td><td class="num hide-s">'+(best(v)||'–')+'</td><td class="hide-s'+(Date.now()-(v.updated||0)<300000?' on':'')+'">'+ago(v.updated)+'</td><td>'+(v.banned?'<span class="chip ban">gesperrt</span>':'<span class="chip ok">aktiv</span>')+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">Keine Accounts gefunden.</div>');
+ $('so').value=sortK;$('so').onchange=e=>{sortK=e.target.value;render()};const qs=$('qs');qs.oninput=e=>{q=e.target.value.toLowerCase();render();const n=$('qs');n.focus();n.setSelectionRange(n.value.length,n.value.length)};
+ document.querySelectorAll('tbody tr').forEach(r=>r.onclick=()=>edit(r.dataset.id))}
+function edit(id){const v=U.find(x=>x.id==id);if(!v)return;sel=id;const ed=$('ed');delete ed.dataset.dirty;const m=inv(v);
+ ed.innerHTML='<button class="close" id="cx">✕</button><h2>'+esc(v.name)+'</h2><div class="sub">erstellt '+(v.created?new Date(v.created).toLocaleDateString('de'):'–')+' · zuletzt aktiv vor '+ago(v.updated)+'</div>'+
+  '<h3>Coins</h3><div class="row coins"><input id="ec" type="number" min="0" value="'+coins(v)+'"><button data-d="-100">−100</button><button data-d="100">+100</button><button data-d="1000">+1000</button><button data-s="0">auf 0</button></div>'+
+  '<h3>Waffen ('+wcount(v)+'/31)</h3><div class="row" style="margin-bottom:6px"><button id="wa">Alle</button><button id="wn">Nur Start-Waffen</button></div><div class="wgrid">'+
+  WN.map((n,i)=>'<label><input type="checkbox" data-w="'+i+'"'+((m>>i&1)||i<2?' checked':'')+(i<2?' disabled':'')+'>'+esc(n)+'</label>').join('')+'</div>'+
+  '<h3>Skins ('+skins(v)+')</h3><div class="row"><button id="sr">Alle Skins entfernen</button></div>'+
+  '<h3>Story</h3><div class="row"><select id="st"><option value="0">kein Spielstand</option>'+[1,2,3,4,5,6].map(l=>'<option value="'+l+'"'+(story(v)==l?' selected':'')+'>Level '+l+'</option>').join('')+'</select><span style="color:var(--dim);font-size:12px">Rekord</span><input id="eb" type="number" min="0" style="width:80px" value="'+best(v)+'"></div>'+
+  '<h3>Sperre</h3>'+(v.banned?'<div class="row"><span class="chip ban">gesperrt</span><span style="color:var(--dim);font-size:12px">'+esc(v.banReason||'kein Grund')+'</span><button id="ub">Entsperren</button></div>':'<div class="row"><input id="br" placeholder="Grund (optional)" style="flex:1"><button class="bad" id="bb">Sperren</button></div>')+
+  '<div class="save"><button class="pri" id="sv">Speichern</button><span class="msg" id="sm"></span><button class="bad" id="rs" style="margin-left:auto">Alles zurücksetzen</button></div>';
+ ed.classList.add('open');render();
+ const dirty=()=>{ed.dataset.dirty=1};ed.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',dirty));
+ $('cx').onclick=()=>{ed.classList.remove('open');sel=null;render()};
+ ed.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{$('ec').value=Math.max(0,(+$('ec').value||0)+ +b.dataset.d);dirty()});ed.querySelector('[data-s]').onclick=()=>{$('ec').value=0;dirty()};
+ $('wa').onclick=()=>{ed.querySelectorAll('[data-w]').forEach(c=>c.checked=true);dirty()};$('wn').onclick=()=>{ed.querySelectorAll('[data-w]').forEach(c=>c.checked=+c.dataset.w<2);dirty()};
+ let clearSkins=0;$('sr').onclick=()=>{clearSkins=1;$('sr').textContent='wird beim Speichern entfernt';dirty()};
+ $('sv').onclick=async()=>{let mask=0;ed.querySelectorAll('[data-w]').forEach(c=>{if(c.checked)mask|=1<<+c.dataset.w});const s=Object.assign({},v.save||{});
+  s.hfCoins=String(Math.max(0,Math.floor(+$('ec').value||0)));s.hfInv=String(mask|3);s.hfBest=String(Math.max(0,+$('eb').value||0));
+  if(clearSkins){s.hfSkins='{}';s.hfSkinEq='{}'}const lv=+$('st').value;if(!lv)delete s.hfStory;else{let o={};try{o=JSON.parse(s.hfStory||'{}')||{}}catch(e){}o.lv=lv;o.ck=o.ck||1;o.lo=o.lo||3;o.coins=o.coins||0;s.hfStory=JSON.stringify(o)}
+  await put(v,{save:s},'Gespeichert. Der Spieler bekommt es sofort, auch wenn er gerade spielt.')};
+ if($('bb'))$('bb').onclick=async()=>{if(!confirm(v.name+' wirklich sperren?'))return;await put(v,{banned:true,banReason:$('br').value.trim()||null},'Gesperrt. Er wird sofort ausgeloggt.')};
+ if($('ub'))$('ub').onclick=()=>put(v,{banned:false,banReason:null},'Entsperrt.');
+ $('rs').onclick=async()=>{if(!confirm('Fortschritt von '+v.name+' komplett zurücksetzen (Coins 50, nur Start-Waffen, keine Skins, kein Story-Stand)?'))return;await put(v,{save:{hfCoins:'50',hfInv:'3',hfSkins:'{}',hfSkinEq:'{}'}},'Zurückgesetzt.')}}
+async function put(v,data,ok){const m=$('sm');m.className='msg';m.textContent='Speichere …';
+ try{await db.collection('users').doc(v.id).update(Object.assign({},data,{adm:(v.adm||0)+1}));
+  delete $('ed').dataset.dirty;m.textContent=ok}catch(e){m.className='msg err';m.textContent='Fehler: '+(e.code||e.message)}}
+</script>
+</body>
+</html>

@@ -43,6 +43,11 @@ Menüpunkt **Account**: Benutzername + Passwort. Gespeichert werden online Coins
 Einrichtung: Firebase-Projekt mit E-Mail/Passwort-Anmeldung und Firestore, Regeln aus `firestore.rules`, Zugangsdaten in `js/firebase-config.js`.
 Solange dort `null` steht, läuft das Spiel wie vorher ohne Accounts.
 
+### Admin-Seite
+`admin.html` (Adresse: `.../phoneversion/admin.html`, nirgends verlinkt): Übersicht über alle Accounts, Coins, Waffen, Skins, Story-Level und Rekord bearbeiten, Accounts sperren/entsperren, Fortschritt zurücksetzen.
+Änderungen kommen beim Spieler sofort an, auch mitten im Spiel. Gesperrte Spieler werden sofort ausgeloggt.
+Wer Admin ist, steht in den Firestore-Regeln (`firestore.rules`).
+
 ## Sandbox
 Unter „Koop & Deathmatch" den Modus **Sandbox (frei spielen)** wählen. Keine Wellen, alle Waffen sind freigeschaltet.
 Mit **B** (Controller: Select, Handy: Knopf SANDBOX) öffnen sich die Werkzeuge: einzelne Gegner (die drei Typen aus dem Story-Modus, werwlf, EuroJunkie, Adam, YoungCola), 5 oder 15 zufällige und jeden Boss spawnen, Unverwundbar, volle Munition, Ulti ohne Wartezeit, Gegner einfrieren, alle töten oder entfernen, heilen.
