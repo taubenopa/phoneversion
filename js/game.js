@@ -154,30 +154,38 @@ function spawnSpot(p){
 function resp(p){const c=spawnSpot(p);p.al=true;p.hp=100;p.x=c[0];p.y=c[1];p.lx=c[0];p.ly=c[1];p.a=Math.atan2(N/2-c[1],N/2-c[0]);p.rc++;p.ar=0;p.iv=story?2.5:2;if(story){storyAmmo(p);return}p.w=firstW(p.lo);p.am=AM0()}
 function hurtE(e,d,o,q){if(e.dead)return;{const ow=players[o];if(ow&&ow.ua>0){if(ow.uk==1)d*=2;else if(ow.uk==4&&ow.al)ow.hp=Math.min(100,ow.hp+Math.min(d,120)*.3)}}   // Jackpot / Wolfsrausch
  e.hp-=d;{const k=players[o];if(k)e.ha=Math.round(Math.atan2(e.y-k.y,e.x-k.x)*100)/100}if(!q){e.fl=.1;e.hn=(e.hn|0)+1;if(e.hp>0)ev(0)}if(e.hp<=0){e.dead=1;e.kd=Math.round(d);e.ov=Math.round(-e.hp);e.ka=e.ha;if(BOOMING)e.kx=1;ev(1);if(story)storyKill(e);if(players[o])players[o].sc+=e.t>=30?500:e.t==19?250:e.t==10?100:e.t==1?15:10;const q=Math.random();if(e.t==10||e.t==19||e.t>=30)PK.push({x:e.x-.4,y:e.y,t:6},{x:e.x+.4,y:e.y,t:7},{x:e.x,y:e.y+.4,t:11});else if(q<.45)PK.push({x:e.x,y:e.y,t:q<.2?6:q<.35?7:11})}}
+// Hoehe beim Zielen: Neigung (Hoch/Runter-Schauen) pro Einheit Entfernung, Boden/Decke, Koerperhoehe
+function vAssist(dt){const L=mode==2&&S?S.e:E,rx=Math.cos(me.a),ry=Math.sin(me.a),z0=.5+(me.z||0);let bt=null,ba=25;
+ for(const e of L){if(e.dead||e.br>0)continue;const vx=e.x-me.x,vy=e.y-me.y,al=vx*rx+vy*ry;if(al<.6||al>ba)continue;if(Math.abs(vx*ry-vy*rx)>(e.r||.35)*1.6)continue;if(cast(me.x,me.y,rx,ry).d<al)continue;bt=e;ba=al}
+ if(!bt)return;const want=Math.max(-95,Math.min(95,(eH(bt)*.55-z0)*VH/ba));me.pt+=(want-me.pt)*Math.min(1,dt*7)}
+function aimS(p){return (p.pt||0)/VH}
+function surf(z0,s){return s<-1e-4?z0/-s:(s>1e-4&&!OUT)?(1-z0)/s:1e9}
+function eH(e){const T=ST[e.t];return T&&T.s?Math.min(2.2,T.s):.9}
+function zIn(z,lo,hi){return z>lo-.08&&z<hi+.1}
 function shoot(p,a,w){
- const rx=Math.cos(a),ry=Math.sin(a);let bd=Math.min(cast(p.x,p.y,rx,ry).d,w.rg),best=null;const wd=bd;
+ const rx=Math.cos(a),ry=Math.sin(a),s=aimS(p),z0=.5+(p.z||0);let bd=Math.min(cast(p.x,p.y,rx,ry).d,w.rg,surf(z0,s)),best=null;const wd=bd;
  try{shotTr(p,rx,ry,w)}catch(e){}
  for(const e of E){if(e.dead||e.br>0)continue;const vx=e.x-p.x,vy=e.y-p.y,al=vx*rx+vy*ry;
-  if(al<0||al>bd)continue;if(Math.abs(vx*ry-vy*rx)<e.r){best=e;bd=al}}
- if(w.pi){for(const e of E){if(e.dead||e.br>0)continue;const vx=e.x-p.x,vy=e.y-p.y,al=vx*rx+vy*ry;if(al>0&&al<wd&&Math.abs(vx*ry-vy*rx)<e.r)hurtE(e,w.d,p.i)}}
+  if(al<0||al>bd)continue;if(Math.abs(vx*ry-vy*rx)<e.r&&zIn(z0+s*al,0,eH(e))){best=e;bd=al}}
+ if(w.pi){for(const e of E){if(e.dead||e.br>0)continue;const vx=e.x-p.x,vy=e.y-p.y,al=vx*rx+vy*ry;if(al>0&&al<wd&&Math.abs(vx*ry-vy*rx)<e.r&&zIn(z0+s*al,0,eH(e)))hurtE(e,w.d,p.i)}}
  else if(best){const bx=best.x,by=best.y;hurtE(best,w.d,p.i);if(w.fr)best.sl=Math.max(best.sl||0,2.5);if(w.ch){let c=0;for(const o of E){if(o===best||o.dead||c>=2)continue;if(Math.hypot(o.x-bx,o.y-by)<3.5){hurtE(o,w.d*.6,p.i);c++}}}}
- if(dm){let bp=null;for(const q of players){if(q===p||!q.on||!q.al)continue;const vx=q.x-p.x,vy=q.y-p.y,al=vx*rx+vy*ry;if(al<0||al>bd)continue;if(Math.abs(vx*ry-vy*rx)<.3){bp=q;bd=al}}if(bp)hitP(bp,w.d,p.i)}
+ if(dm){let bp=null;for(const q of players){if(q===p||!q.on||!q.al)continue;const vx=q.x-p.x,vy=q.y-p.y,al=vx*rx+vy*ry;if(al<0||al>bd)continue;if(Math.abs(vx*ry-vy*rx)<.3&&zIn(z0+s*al,q.z||0,(q.z||0)+.9)){bp=q;bd=al}}if(bp)hitP(bp,w.d,p.i)}
 }
 // Schuss-Spur fuer andere Spieler sichtbar machen (eigene Schuesse zeichnet jeder selbst, ohne Verzoegerung)
-function shotTr(p,rx,ry,w){const wi=WP.indexOf(w);if(!TRS[wi])return;const d=hitDist(p.x,p.y,rx,ry,w,p),z=.5+(p.z||0),b=[p.x,p.y,z,p.x+rx*d.d,p.y+ry*d.d,d.h?.45:z,wi,p.i,d.h];
+function shotTr(p,rx,ry,w){const wi=WP.indexOf(w);if(!TRS[wi])return;const z=.5+(p.z||0),d=hitDist(p.x,p.y,rx,ry,w,p,z,aimS(p)),b=[p.x,p.y,z,p.x+rx*d.d,p.y+ry*d.d,d.z,wi,p.i,d.h];
  BS.push(b);if(p.i!==id)addTr(b,0)}
 // Wie weit fliegt ein Schuss: Wand, Reichweite oder erster Gegner (h=1)
-function hitDist(x0,y0,rx,ry,w,p){let d=Math.min(cast(x0,y0,rx,ry).d,w.rg),h=0;if(w.pi)return{d,h};
- for(const e of (mode==2&&S?S.e:E)){if(e.dead||e.br>0)continue;const vx=e.x-x0,vy=e.y-y0,al=vx*rx+vy*ry;if(al<0||al>d)continue;if(Math.abs(vx*ry-vy*rx)<(e.r||.35)){d=al;h=1}}
- if(dm&&S&&S.p)for(const q of S.p){if(!q||q.i===(p?p.i:id)||!q.on||!q.al)continue;const vx=q.x-x0,vy=q.y-y0,al=vx*rx+vy*ry;if(al<0||al>d)continue;if(Math.abs(vx*ry-vy*rx)<.3){d=al;h=1}}
- return{d,h}}
+function hitDist(x0,y0,rx,ry,w,p,z0,s){z0=z0==null?.5:z0;s=s||0;let d=Math.min(cast(x0,y0,rx,ry).d,w.rg,surf(z0,s)),h=0;const fz=()=>Math.max(0,Math.min(3,z0+s*d));if(w.pi)return{d,h,z:fz()};
+ for(const e of (mode==2&&S?S.e:E)){if(e.dead||e.br>0)continue;const vx=e.x-x0,vy=e.y-y0,al=vx*rx+vy*ry;if(al<0||al>d)continue;if(Math.abs(vx*ry-vy*rx)<(e.r||.35)&&zIn(z0+s*al,0,eH(e))){d=al;h=1}}
+ if(dm&&S&&S.p)for(const q of S.p){if(!q||q.i===(p?p.i:id)||!q.on||!q.al)continue;const vx=q.x-x0,vy=q.y-y0,al=vx*rx+vy*ry;if(al<0||al>d)continue;if(Math.abs(vx*ry-vy*rx)<.3&&zIn(z0+s*al,q.z||0,(q.z||0)+.9)){d=al;h=1}}
+ return{d,h,z:fz()}}
 function fire(p){
  const w=WP[p.w];if(!w)return;
  if(!(p.lo>>p.w&1)){p.cd=.2;return}
  if(w.su&&!(p.spn>=1)){p.cd=0;return}
  if(w.am&&p.am[p.w]<=0){p.cd=.3;return}
  if(w.am)p.am[p.w]--;p.cd=w.cd*(p.ua>0&&p.uk==1?.62:1);
- if(w.pr){const n=w.pn||1;for(let k=0;k<n;k++){const a=p.a+(n>1?(k/(n-1)-.5)*w.ps:0);J.push({x:p.x+Math.cos(a)*.4,y:p.y+Math.sin(a)*.4,vx:Math.cos(a)*w.v,vy:Math.sin(a)*w.v,t:w.pr,o:p.i,l:w.l||3,pd:w.pd,pc:w.pd?1:0,rr:w.pd?(w.bm?.22:.15):0,bm:w.bm,mo:w.mo,hm:w.hm,ex:w.ex,xd:w.xd,gv:w.gv})}return}
+ if(w.pr){const n=w.pn||1;for(let k=0;k<n;k++){const a=p.a+(n>1?(k/(n-1)-.5)*w.ps:0);J.push({x:p.x+Math.cos(a)*.4,y:p.y+Math.sin(a)*.4,vx:Math.cos(a)*w.v,vy:Math.sin(a)*w.v,zz:(p.z||0)+aimS(p)*.4,vz:aimS(p)*w.v,t:w.pr,o:p.i,l:w.l||3,pd:w.pd,pc:w.pd?1:0,rr:w.pd?(w.bm?.22:.15):0,bm:w.bm,mo:w.mo,hm:w.hm,ex:w.ex,xd:w.xd,gv:w.gv})}return}
  if(w.bu){p.bq=w.bu-1;p.bt=.07}
  const sp=w.sp*((p.ads||p.ad)?(w.ads!=null?w.ads:.3):1);   // beim Zielen genauer
  for(let k=0;k<w.n;k++)shoot(p,p.a+(Math.random()-.5)*sp*2,w);
@@ -268,10 +276,12 @@ function sim(dt){
    if(j.l<.05){boom(j);shk=Math.max(shk,4);return false}}
   if(j.hm){let tg=null,bd=9;for(const e of E)if(!e.dead){const d=Math.hypot(e.x-j.x,e.y-j.y);if(d<bd){bd=d;tg=e}}if(dm)for(const q of players)if(q.on&&q.al&&q.i!==j.o){const d=Math.hypot(q.x-j.x,q.y-j.y);if(d<bd){bd=d;tg=q}}
    if(tg){const v=Math.hypot(j.vx,j.vy),a=Math.atan2(j.vy,j.vx);let da=Math.atan2(tg.y-j.y,tg.x-j.x)-a;da=Math.atan2(Math.sin(da),Math.cos(da));const na=a+Math.max(-4*dt,Math.min(4*dt,da));j.vx=Math.cos(na)*v;j.vy=Math.sin(na)*v}}
-  j.x+=j.vx*dt;j.y+=j.vy*dt;j.l-=dt;let hit=(!j.back&&wl(j.x,j.y))||j.l<=0;
+  if(j.vz!=null){if(j.back)j.vz=(.05-j.zz)*4;else if(j.hm){let ht=.5;for(const e of E)if(!e.dead&&Math.hypot(e.x-j.x,e.y-j.y)<9){ht=eH(e)*.55;break}j.vz+=((ht-.45-j.zz)*5-j.vz)*Math.min(1,5*dt)}else if(j.gv&&j.bt>.7)j.vz*=Math.pow(.04,dt);j.zz+=j.vz*dt}   // Hoehe
+  const jz=.45+(j.zz||0);
+  j.x+=j.vx*dt;j.y+=j.vy*dt;j.l-=dt;let hit=(!j.back&&wl(j.x,j.y))||j.l<=0||(j.vz!=null&&!j.gv&&(jz<.02||(!OUT&&jz>1)));
   if(j.o<0){for(const p of players)if(p.on&&p.al&&!(p.z>.25&&j.t!=24)&&Math.hypot(p.x-j.x,p.y-j.y)<.4){hurtP(p,j.d||12);hit=1}}
-  else if(!j.gv)for(const e of E)if(!e.dead&&!(e.br>0)&&Math.hypot(e.x-j.x,e.y-j.y)<e.r+(j.rr||.1)){if(j.pc){if((j.hs=j.hs||[]).includes(e.id))continue;j.hs.push(e.id);hurtE(e,j.pd,j.o);if(j.br)bribe(e,j.o);continue}if(j.pd)hurtE(e,j.pd,j.o);else if(j.t==4)hurtE(e,16,j.o);hit=1;break}
-  if(dm&&j.o>=0)for(const q of players)if(q.on&&q.al&&q.i!==j.o&&Math.hypot(q.x-j.x,q.y-j.y)<.4){if(j.pd)hitP(q,j.pd*.5,j.o);else if(j.t==4)hitP(q,16,j.o);hit=1}
+  else if(!j.gv)for(const e of E)if(!e.dead&&!(e.br>0)&&Math.hypot(e.x-j.x,e.y-j.y)<e.r+(j.rr||.1)&&(j.vz==null||zIn(jz,0,eH(e)))){if(j.pc){if((j.hs=j.hs||[]).includes(e.id))continue;j.hs.push(e.id);hurtE(e,j.pd,j.o);if(j.br)bribe(e,j.o);continue}if(j.pd)hurtE(e,j.pd,j.o);else if(j.t==4)hurtE(e,16,j.o);hit=1;break}
+  if(dm&&j.o>=0)for(const q of players)if(q.on&&q.al&&q.i!==j.o&&Math.hypot(q.x-j.x,q.y-j.y)<.4&&(j.vz==null||zIn(jz,q.z||0,(q.z||0)+.9))){if(j.pd)hitP(q,j.pd*.5,j.o);else if(j.t==4)hitP(q,16,j.o);hit=1}
   if(hit&&j.bb){if(sol(j.x,j.y)){j.x-=j.vx*.06;j.y-=j.vy*.06}bigBoom(j.x,j.y,j.o);return false}   // Bilderbombe
   if(hit&&j.gf){if(sol(j.x,j.y)){j.x-=j.vx*.06;j.y-=j.vy*.06}graffiti(j.x,j.y,j.o);return false}   // Graffiti-Schuss
   if(hit&&j.mo){if(sol(j.x,j.y)){j.x-=j.vx*.06;j.y-=j.vy*.06}ZN.push({x:j.x,y:j.y,r:2.2,l:5,k:8,o:j.o,tk:0});ev(2);NJ.push({x:j.x,y:j.y,vx:0,vy:0,t:5,o:j.o,l:.35});return false}   // Molotow
@@ -343,9 +353,9 @@ function shotFx(w){shk=Math.max(shk,([0,.6,2.4,.8,2.2,.3,3.6,3,1.4,.3,1.8,.6,3.2
  if(w==23)for(let k=0;k<4;k++)PT.push({x:VM.mx+(Math.random()-.5)*10,y:VM.my+8,vx:(Math.random()-.5)*60,vy:-(90+Math.random()*120),g:-20,l:.3+Math.random()*.15,c:['#bff','#8df','#fff'][Math.random()*3|0],s:2+Math.random()*3});
  if(TRS[w]){const W=WP[w],sp=W.sp*(me.ads?(W.ads!=null?W.ads:.3):1),z=.5+(me.z||0);
   const C=CAM,d0=.55,cx=VM.mx?(2*VM.mx/VW-1):.3,sx0=C.px+(C.dx+C.plx*cx)*d0,sy0=C.py+(C.dy+C.ply*cx)*d0,sz0=EY-((VM.my||VH*.7)-HZ)*d0/VH;
-  for(let k=0;k<W.n;k++){const a=me.a+(Math.random()-.5)*sp*2,rx=Math.cos(a),ry=Math.sin(a),d=hitDist(me.x,me.y,rx,ry,W,null),ex=me.x+rx*d.d,ey=me.y+ry*d.d;
-   // Spur folgt dem Fadenkreuz auch beim Hoch-/Runterschauen; beim Runterschauen endet sie im Boden
-   const pt=me.pt||0;let dd=d.d,ez=EY+pt*dd/VH;if(pt<-.5){const g=EY*VH/-pt;if(g<dd){dd=g;ez=0}}ez=d.h?Math.max(.15,Math.min(.9,ez)):Math.max(0,Math.min(3,ez));
+  for(let k=0;k<W.n;k++){const a=me.a+(Math.random()-.5)*sp*2,rx=Math.cos(a),ry=Math.sin(a),d=hitDist(me.x,me.y,rx,ry,W,null,z,aimS(me));
+   // Spur folgt dem Fadenkreuz: endet am Gegner, an der Wand, im Boden oder an der Decke
+   const dd=d.d,ez=d.z;
    const fx=me.x+rx*dd,fy=me.y+ry*dd;if(Math.hypot(fx-sx0,fy-sy0)>.3)addTr([sx0,sy0,sz0,fx,fy,ez,w,id,d.h],1)}
   return}
  if(w==9)for(let k=0;k<5;k++)PT.push({x:VM.mx+(Math.random()-.5)*10,y:VM.my+10,vx:(Math.random()-.5)*50,vy:-(120+Math.random()*120),g:-10,l:.25+Math.random()*.15,c:Math.random()<.5?'#f80':'#fd3',s:3+Math.random()*3});
@@ -380,7 +390,7 @@ async function invite(){
  const pc=new RTCPeerConnection(cfg),c=pc.createDataChannel('g');pend={pc,slot};
  c.onopen=()=>{if(pend&&pend.pc===pc)pend=null;players[slot].on=true;chs[slot]=c;c.send(JSON.stringify({t:'hi',id:slot}));ul()};
  c.onmessage=e=>{const m=JSON.parse(e.data),p=players[slot];
-  if(p.al&&m.c===p.rc&&(m.tp|0)===(p.tp|0)&&can(m.x,m.y,.2)){p.x=m.x;p.y=m.y}p.a=m.a;p.ad=m.ad|0;p.z=+m.z||0;p.f=m.f;p.w=m.w;if(!story)p.lo=(m.l|1)&ALLW;p.nm=String(m.n||"").slice(0,10);p.ch=m.h|0;if(m.q)p.qn=m.q;if(m.k!==p.k){p.k=m.k;if(story&&SS)SS.cf=1}};
+  if(p.al&&m.c===p.rc&&(m.tp|0)===(p.tp|0)&&can(m.x,m.y,.2)){p.x=m.x;p.y=m.y}p.a=m.a;p.ad=m.ad|0;p.pt=Math.max(-95,Math.min(95,+m.pt||0));p.z=+m.z||0;p.f=m.f;p.w=m.w;if(!story)p.lo=(m.l|1)&ALLW;p.nm=String(m.n||"").slice(0,10);p.ch=m.h|0;if(m.q)p.qn=m.q;if(m.k!==p.k){p.k=m.k;if(story&&SS)SS.cf=1}};
  c.onclose=()=>{players[slot].on=false;chs[slot]=null;rsv[slot]=0;ul()};
  await pc.setLocalDescription(await pc.createOffer());await waitIce(pc);$('oc').value=enc(pc.localDescription);
 }
@@ -390,7 +400,7 @@ async function join(){
   const pc=new RTCPeerConnection(cfg);
   pc.ondatachannel=e=>{ch=e.channel;ch.onmessage=ev=>{const m=JSON.parse(ev.data);
    if(m.t=='hi'){id=m.id;me={x:0,y:0,a:0,w:firstW(LO|1),lo:LO|1,f:0,rc:-1};mode=2;$('m').style.display='none';
-    setInterval(()=>{if(ch.readyState=='open')ch.send(JSON.stringify({x:me.x,y:me.y,a:me.a,f:me.f,w:me.w,c:me.rc,l:me.lo,n:$('nm').value.slice(0,10),h:myCh,k:me.k|0,z:me.z||0,q:me.qn|0,tp:me.tp|0,ad:me.ads|0},rnd))},33)}
+    setInterval(()=>{if(ch.readyState=='open')ch.send(JSON.stringify({x:me.x,y:me.y,a:me.a,f:me.f,w:me.w,c:me.rc,l:me.lo,n:$('nm').value.slice(0,10),h:myCh,k:me.k|0,z:me.z||0,q:me.qn|0,tp:me.tp|0,ad:me.ads|0,pt:me.pt||0},rnd))},33)}
    else if(m.t=='s'){S=m;(m.ev||[]).forEach(play);for(const b of m.b||[])if(b[7]!==id)addTr(b,0)}};ch.onclose=()=>lost=1};
   await pc.setRemoteDescription(dec($('ic').value));await pc.setLocalDescription(await pc.createAnswer());await waitIce(pc);
   $('oc2').value=enc(pc.localDescription);
@@ -409,12 +419,12 @@ function hostConn(c){
  if(slot<0){c.on('open',()=>{c.send(JSON.stringify({t:'full'}));setTimeout(()=>c.close(),300)});return}
  c.on('open',()=>{players[slot].on=true;chs[slot]=c;c.send(JSON.stringify({t:'hi',id:slot}));ul()});
  c.on('data',d=>{const m=JSON.parse(d),p=players[slot];
-  if(p.al&&m.c===p.rc&&(m.tp|0)===(p.tp|0)&&can(m.x,m.y,.2)){p.x=m.x;p.y=m.y}p.a=m.a;p.ad=m.ad|0;p.z=+m.z||0;p.f=m.f;p.w=m.w;if(!story)p.lo=(m.l|1)&ALLW;p.nm=String(m.n||"").slice(0,10);p.ch=m.h|0;if(m.q)p.qn=m.q;if(m.k!==p.k){p.k=m.k;if(story&&SS)SS.cf=1}});
+  if(p.al&&m.c===p.rc&&(m.tp|0)===(p.tp|0)&&can(m.x,m.y,.2)){p.x=m.x;p.y=m.y}p.a=m.a;p.ad=m.ad|0;p.pt=Math.max(-95,Math.min(95,+m.pt||0));p.z=+m.z||0;p.f=m.f;p.w=m.w;if(!story)p.lo=(m.l|1)&ALLW;p.nm=String(m.n||"").slice(0,10);p.ch=m.h|0;if(m.q)p.qn=m.q;if(m.k!==p.k){p.k=m.k;if(story&&SS)SS.cf=1}});
  c.on('close',()=>{players[slot].on=false;chs[slot]=null;rsv[slot]=0;ul()});
 }
 function onNet(m){
  if(m.t=='hi'&&!mode){id=m.id;me={x:0,y:0,a:0,w:firstW(LO|1),lo:LO|1,f:0,rc:-1};mode=2;$('m').style.display='none';
-  setInterval(()=>{if(ch.open)ch.send(JSON.stringify({x:me.x,y:me.y,a:me.a,f:me.f,w:me.w,c:me.rc,l:me.lo,n:$('nm').value.slice(0,10),h:myCh,k:me.k|0,z:me.z||0,q:me.qn|0,tp:me.tp|0,ad:me.ads|0},rnd))},33)}
+  setInterval(()=>{if(ch.open)ch.send(JSON.stringify({x:me.x,y:me.y,a:me.a,f:me.f,w:me.w,c:me.rc,l:me.lo,n:$('nm').value.slice(0,10),h:myCh,k:me.k|0,z:me.z||0,q:me.qn|0,tp:me.tp|0,ad:me.ads|0,pt:me.pt||0},rnd))},33)}
  else if(m.t=='s'){S=m;(m.ev||[]).forEach(play);for(const b of m.b||[])if(b[7]!==id)addTr(b,0)}else if(m.t=='full')$('js2').textContent='Spiel ist voll';
 }
 function joinCode(tries){
@@ -474,7 +484,7 @@ function local(){
  const P=S.p[id];if(!P)return;
  if(mode==2&&P.rc!==me.rc){if(me.rc>=0)me.a=Math.atan2(N/2-P.y,N/2-P.x);me.rc=P.rc;me.x=P.x;me.y=P.y;me.pt=0;if(!S.st)me.w=firstW(me.lo)}
  if(S.st){if(mode==2)me.lo=P.lo;if(!(me.lo>>me.w&1))me.w=1}
- if(mode==2)for(const j of S.j)if(j.t!=5){j.x+=j.vx*dt;j.y+=j.vy*dt}   // Geschosse zwischen zwei Updates weiterfliegen lassen
+ if(mode==2)for(const j of S.j)if(j.t!=5){j.x+=j.vx*dt;j.y+=j.vy*dt;if(j.vz)j.zz=(j.zz||0)+j.vz*dt}   // Geschosse zwischen zwei Updates weiterfliegen lassen
  if(mode==2&&(P.tp|0)!==(me.tp|0)){me.tp=P.tp|0;me.x=P.x;me.y=P.y}
  if(P.al&&P.hp>lastHp+15&&lastHp>0)healFl=.4;
  shopTick(P);   // Punkte -> Shop-Coins
@@ -484,6 +494,7 @@ function local(){
  if(!P.al||pmOpen||(S.st&&S.st.ph!='play'&&S.st.ph!='clear'))return;
  me.a+=((ky.ArrowRight?1:0)-(ky.ArrowLeft?1:0))*2.5*dt+GP.t*3.3*SENS*(1-.45*VM.ak)*dt;
  me.pt=Math.max(-95,Math.min(95,(me.pt||0)+((ky.PageUp?1:0)-(ky.PageDown?1:0))*140*dt-GP.l*150*SENS*dt));
+ if((TOUCH||GP.pad)&&(me.f||me.ads)&&P.al)vAssist(dt);   // Handy/Controller: Hoehe sanft auf Gegner im Fadenkreuz ziehen
  const f=(ky.KeyW||ky.ArrowUp?1:0)-(ky.KeyS||ky.ArrowDown?1:0)+GP.f+TC.f,sd=(ky.KeyD?1:0)-(ky.KeyA?1:0)+GP.s+TC.s,c=Math.cos(me.a),s=Math.sin(me.a);
  let vx=c*f-s*sd,vy=s*f+c*sd;const l=Math.hypot(vx,vy);if(l>1){vx/=l;vy/=l}
  const V=(ky.ShiftLeft||GP.run||TC.run?5:3.4)*(P.ua>0&&P.uk==4?1.45:1)*(me.ads&&me.w?.62:1);bob+=l>0&&!(me.z>0)?dt*(V>4?13:9):0;const cx2=me.pad&&me.z>0?me.pad.x:0,cy2=me.pad&&me.z>0?me.pad.y:0,nx=me.x+(vx*V+cx2)*dt,ny=me.y+(vy*V+cy2)*dt;if(can(nx,me.y,.25))me.x=nx;if(can(me.x,ny,.25))me.y=ny;
@@ -718,9 +729,9 @@ function render(){
   if(e.dead){if(!f.d){f.d=1;if(!attractOn)goreDeath(e,q,now)}return}
   const hk=f.ht?Math.max(0,1-(now-f.ht)/.16):0,hx=hk?Math.cos(f.ha)*hk*.12:0,hy=hk?Math.sin(f.ha)*hk*.12:0;
   sp.push({x:q.x+hx,y:q.y+hy,t:e.t,sn:e.sn>0,br:e.br>0,sl:e.sl>0,bl:e.bl>0,f:e.fl>0,ph:e.ph||0,mv:e.mv,at:e.at||0,dd:e.dd||0,en:e.en,age:now-f.b})});
- S.j.forEach(j=>{sp.push({x:j.x,y:j.y,t:j.t,l:j.l,z:j.fz||0});
+ S.j.forEach(j=>{sp.push({x:j.x,y:j.y,t:j.t,l:j.l,z:j.fz||j.zz||0});
   if(j.t==5){const k='x'+j.x.toFixed(1)+j.y.toFixed(1);if(!FXS[k]){puff(j.x,j.y,.45,26,['#fd6','#f80','#fff','#555'],3.4,{s:.04});puff(j.x,j.y,.3,10,['#444','#666'],1,{g:-1.2,l:.9,m:.9,s:.09})}(FXS[k]=FXS[k]||{}).u=frameN;return}
-  const tr=TRL[j.t];if(tr&&Math.random()<tr[0]*dt*60)WPT.push({x:j.x,y:j.y,z:tr[3]||.42,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,vz:tr[4]||.2,g:tr[5]||0,l:tr[2],m:tr[2],c:tr[1][Math.random()*tr[1].length|0],s:tr[6]||.035})});
+  const tr=TRL[j.t];if(tr&&Math.random()<tr[0]*dt*60)WPT.push({x:j.x,y:j.y,z:(tr[3]||.42)+(j.zz||0),vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,vz:tr[4]||.2,g:tr[5]||0,l:tr[2],m:tr[2],c:tr[1][Math.random()*tr[1].length|0],s:tr[6]||.035})});
  S.k.forEach(k=>sp.push({x:k.x,y:k.y,t:k.t,pk:1}));
  for(const d of DECO)sp.push(d);
  S.p.forEach(p=>{if(S.dm&&p.on&&p.i!=id&&!p.al&&GORE.al&&GORE.al[p.i]){GORE.al[p.i]=0;deathSnd(p.x,p.y,'back',0,0)}if(!(p.on&&p.al&&p.i!=id))return;const q=smo('p'+p.i,p);if(S.dm)goreP(p,q);const a=PAN[p.i]||(PAN[p.i]={x:q.x,y:q.y,ph:0,t:0});

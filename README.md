@@ -114,6 +114,8 @@ Gibt Skins für Waffen, die du schon besitzt. Rein optisch, gilt in allen Modi. 
 
 Die Waffe ist ein echtes 3D-Modell wie in Call of Duty: schräg von hinten rechts, mit zwei Armen (rechts am Griff, links am Vordergriff). Die Modelle stehen in `js/vm.js`. Mit Rechtsklick (Controller: `LT`) zielst du: Die Waffe kommt in die Bildmitte, das Bild zoomt leicht, du läufst langsamer und die Schüsse streuen viel weniger. Sniper und Railgun haben ein Zielfernrohr mit stärkerem Zoom. Wie stark das Zielen die Streuung senkt, steht pro Waffe in `WP` (`js/game.js`) als `ads`.
 
+Schüsse gehen dahin, wo das Fadenkreuz hinzeigt, auch nach oben und unten. Wer zu tief zielt, schießt in den Boden, wer zu hoch zielt, über den Gegner (drinnen in die Decke). Das gilt für Kugeln, Raketen und alle anderen Geschosse, auch online. Auf dem Handy und mit Controller zieht beim Schießen oder Zielen eine sanfte Zielhilfe die Höhe auf den Gegner im Fadenkreuz.
+
 Neue Waffen: Sturmgewehr (AK, präzise beim Zielen), Maschinenpistole (UZI, sehr schnell), Armbrust (Bolzen durchschlägt Gegner), Minigun (muss erst anlaufen). Im Story-Modus kommen sie über das Case Opening.
 
 ## Charaktere und Ultis
