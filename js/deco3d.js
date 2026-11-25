@@ -51,7 +51,7 @@ function drawFace(f,s){const C=CAM,inv=1/(C.plx*C.dy-C.dx*C.ply);
  const tw=tex.width,th=tex.height,dtx=P1[0]-P0[0],dty=P1[1]-P0[1];
  for(let i=i0;i<=i1;i++){const k=2*(i+.5)/VW-1,den=dtx-k*dty;if(Math.abs(den)<1e-6)continue;const t=Math.max(0,Math.min(1,(k*P0[1]-P0[0])/den)),ty=P0[1]+dty*t;if(Z[i]<ty)continue;
   // perspektivisch korrekt: t ist schon im Raum linear, da aus der Kamera-Geraden geloest
-  let u=v0+(v1-v0)*t;if(f.mir)u=1-u;const sz=VH/ty,bot=HZ+EY*sz,top=bot-f.H*sz;x.drawImage(tex,Math.min(tw-1,(u*tw)|0),0,1,th,i,top,1,bot-top)}}
+  let u=v0+(v1-v0)*t;if(f.mir)u=1-u;const sz=PV/ty,bot=HZ+EY*sz,top=bot-f.H*sz;x.drawImage(tex,Math.min(tw-1,(u*tw)|0),0,1,th,i,top,1,bot-top)}}
 function drawObj(s){const o=s.o;if(!o)return false;if(o.M){drawModel3(o,s);return true}if(!o.F.length)return false;const C=CAM;
  const F=o.F.map(f=>({f,d:((f.a[0]+f.b[0])/2-C.px)**2+((f.a[1]+f.b[1])/2-C.py)**2})).sort((p,q)=>q.d-p.d);for(const q of F)drawFace(q.f,s);return true}
 
@@ -128,7 +128,7 @@ function drawModel3(o,s){const C=CAM,inv=1/(C.plx*C.dy-C.dx*C.ply),NZ=.06,ez=EY;
  for(const f of o.M){const vx=C.px-f.cx,vy=C.py-f.cy,vz=ez-f.cz;if(f.n[0]*vx+f.n[1]*vy+f.n[2]*vz<=0)continue;   // Rueckseite
   let P=f.v.map(T);if(P.every(p=>p[1]<NZ))continue;
   if(P.some(p=>p[1]<NZ)){const R=[];for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],ia=a[1]>=NZ,ib=b[1]>=NZ;if(ia)R.push(a);if(ia!=ib){const t=(NZ-a[1])/(b[1]-a[1]);R.push([a[0]+(b[0]-a[0])*t,NZ,a[2]+(b[2]-a[2])*t])}}P=R;if(P.length<3)continue}
-  const S=P.map(p=>[VW/2*(1+p[0]/p[1]),HZ+(EY-p[2])*VH/p[1]]);for(const p of S){if(p[0]<x0)x0=p[0];if(p[0]>x1)x1=p[0]}
+  const S=P.map(p=>[VW/2*(1+p[0]/p[1]),HZ+(EY-p[2])*PV/p[1]]);for(const p of S){if(p[0]<x0)x0=p[0];if(p[0]>x1)x1=p[0]}
   const d=P.reduce((a,p)=>a+p[1],0)/P.length,k=(amb+dif*Math.max(0,f.n[0]*SUN[0]+f.n[1]*SUN[1]+f.n[2]*SUN[2]))*lv;vis.push({S,d,col:'rgb('+shadeC(f.c,k).join(',')+')'})}
  if(!vis.length)return;if(x1<0||x0>=VW)return;
  if(!clipCols(x0-1,x1+1,s.ty))return;x.save();x.clip();vis.sort((a,b)=>b.d-a.d);

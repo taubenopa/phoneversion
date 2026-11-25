@@ -35,6 +35,13 @@ Koop-Shooter (Raycaster) für den Browser. Koop und Deathmatch sind wie vorher, 
 - Tastatur/Maus: `WASD` laufen, Maus umsehen, Klick schießen, Rechtsklick zielen (über Kimme und Korn, Sniper/Railgun mit Zielfernrohr), `Q` Ulti, `Leertaste` springen, `Shift` rennen, `1`–`9` oder Mausrad Waffe wechseln, `Esc` Spielmenü.
 - Controller: linker Stick laufen, rechter Stick zielen, `RT` schießen, `X` Ulti, `A` springen, `LT` zielen, linken Stick drücken rennen, `RB`/`LB` Waffe, `Start` Spielmenü. In Menüs: Steuerkreuz, `A` auswählen, `B` zurück.
 - Wer springt, weicht Geschossen am Boden aus (Bomben treffen trotzdem).
+- Alle Tasten (laufen, rennen, springen, Ulti, Minimap, Ton, Pause, Sandbox) lassen sich unter **Einstellungen → Tastenbelegung** neu belegen. Die Pfeiltasten gehen immer zusätzlich.
+
+### Einstellungen
+- **Blickfeld** 60° bis 110° (normal 75°), auch im Spielmenü.
+- **Grafik**: Hoch, Mittel (weniger Partikel), Niedrig (dazu einfacher Boden, flache Deko statt 3D-Modelle, kein Lichtschein in der Nacht, Anzeige in halber Auflösung). Für schwache Handys.
+- **FPS-Grenze**: unbegrenzt, 60 oder 30 (spart Akku). **FPS anzeigen** blendet oben rechts die Bildrate ein.
+- Gespeichert wird alles in `localStorage.hfSet`. Code: `js/settings.js`.
 - **Hafen Grill** (nur Koop und Deathmatch): offene Nachtkarte an der Feldherrnstraße in Dortmund mit Hafen Restaurant, Havanna Café, Kiosk, Grünzug und Laternenlicht. Alles steht in `js/hafen.js`.
 - Präsidentenstraße, Ultimative Kampf Arena Bonn und Hafen Grill haben Sprungfelder (blau leuchtend, auch auf der Minimap): drauflaufen, und du fliegst hoch und ein Stück in Blickrichtung. Positionen stehen bei der Karte in `js/game.js` unter `jp`.
 
@@ -178,6 +185,7 @@ js/screams.js         Todesschreie und Schmerzlaute der Gegner (assets/sfx/screa
 js/deco3d.js          Echte 3D-Modelle für Autos, Container, Zäune, Poller, Tische usw. und Hitboxen für alle Deko
 js/account.js         Accounts (Firebase): Einloggen, Fortschritt online speichern
 js/online.js          Statistik, Bestenliste und Lobby-Liste (Firebase)
+js/settings.js        Einstellungen: Blickfeld, Grafik, FPS-Grenze, Tastenbelegung
 js/gungame.js         Gun-Game-Modus
 js/birds.js           Fliegende Tauben und Boss Riesentaube
 js/firebase-config.js Firebase-Zugangsdaten (null = ohne Accounts)

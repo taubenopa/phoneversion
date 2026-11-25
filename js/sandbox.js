@@ -30,7 +30,7 @@ function sbToggle(on){if(!SBX||story||mode!=1)return;sbOpen=on==null?!sbOpen:!!o
  box.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;const d=b.dataset;
   if(d.e!=null)sbSpawn(+d.e,1);else if(d.r)sbSpawn(null,+d.r);else if(d.b)sbBoss(+d.b);
   else if(d.k){SB[d.k]=SB[d.k]?0:1;sbRender()}else if(d.a=='kill')sbKill();else if(d.a=='clear')sbClear();else if(d.a=='heal'){const p=players[0];p.hp=100;p.al=true;sbRender()}else if(d.a=='close')sbToggle(0)});
- addEventListener('keydown',e=>{if(e.code=='KeyB'&&mode==1&&SBX&&!pmOpen){sbToggle();e.preventDefault()}else if(e.code=='Escape'&&sbOpen){sbToggle(0);e.preventDefault()}});
+ addEventListener('keydown',e=>{if(e.code==KB.sbx&&mode==1&&SBX&&!pmOpen&&!KBW){sbToggle();e.preventDefault()}else if(e.code=='Escape'&&sbOpen){sbToggle(0);e.preventDefault()}});
  // Handy-Knopf
  const tb=document.createElement('button');tb.className='tb';tb.id='tb-sbx';tb.dataset.k='sbx';tb.textContent='SANDBOX';tb.setAttribute('aria-label','Sandbox');
  const add=()=>{const tc=document.getElementById('tc');if(tc&&!document.getElementById('tb-sbx')){tc.appendChild(tb);tb.addEventListener('touchstart',ev=>{ev.preventDefault();ev.stopPropagation();sbToggle(1)},{passive:false})}};add();setTimeout(add,500);

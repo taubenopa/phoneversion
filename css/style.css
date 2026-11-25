@@ -238,3 +238,13 @@ body:not(.inmenu) #ver{display:none}
 .lobs b{display:block;color:var(--ash);font-size:15px}.lobs span{font-size:11.5px;color:var(--dim)}
 .lobs .pc{font:800 14px var(--mono);color:var(--gold)}
 .lobsw{margin:6px 0 2px;font-size:12px}.lobsw .chk{display:flex;gap:7px;align-items:center;color:var(--dim);cursor:pointer}
+
+/* Einstellungen */
+.setv{font:700 12px var(--mono);color:var(--gold);margin-left:6px}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ash);cursor:pointer;margin:8px 0}
+.kbl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;max-width:520px}
+.kbr{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--ash);border-bottom:1px solid #2a1f1a;padding:3px 0}
+.kbr button{all:unset;cursor:pointer;min-width:84px;text-align:center;padding:5px 8px;font:700 12px var(--mono);color:var(--gold);background:#120d0c;border:1px solid var(--line)}
+.kbr button:hover,.kbr button:focus-visible{border-color:var(--gold)}
+.kbr button.wait{color:#1a0f08;background:var(--gold);border-color:var(--gold);animation:flick .6s steps(2) infinite}
+.chk input[type=checkbox]{width:16px;height:16px;flex:none;margin:0;padding:0;accent-color:var(--ember)}.chk span{flex:none}

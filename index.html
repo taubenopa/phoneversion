@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>TAUBENGAME</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="stylesheet" href="css/style.css?v=202611250930"></head><body>
+<link rel="stylesheet" href="css/style.css?v=202611251015"></head><body>
 <div id="attcap"><small data-en="Preview">Vorschau</small><b></b></div>
 <canvas id="cv"></canvas>
 <div id="m">
@@ -114,8 +114,20 @@
    <h3 data-en="Language">Sprache</h3><div class="row langrow"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
    <h3 data-en="Effects volume">Effekte</h3><input type="range" id="sv" min="0" max="100" value="70">
    <h3 data-en="Music volume">Musik</h3><input type="range" id="mv" min="0" max="100" value="15">
-   <h3 data-en="Mouse and stick sensitivity">Maus- und Stick-Empfindlichkeit</h3><input type="range" id="se" min="30" max="250" value="100">
    <p class="hint" data-en="In story mode every level has its own song. For co-op you can pick your own file here:">Im Story-Modus hat jedes Level seinen eigenen Song. Für Koop kannst du hier eine eigene Datei wählen:</p><input type="file" id="mf" accept="audio/*">
+   <h3 data-en="Mouse and stick sensitivity">Maus- und Stick-Empfindlichkeit</h3><input type="range" id="se" min="30" max="250" value="100">
+   <h3><span data-en="Field of view">Blickfeld</span> <span id="fovv" class="setv dyn">75°</span></h3><input type="range" id="fov" min="60" max="110" value="75">
+   <p class="hint" data-en="Wider means you see more to the sides, but everything looks a bit smaller. Normal is 75°.">Breiter heißt, du siehst mehr zur Seite, dafür wirkt alles etwas kleiner. Normal ist 75°.</p>
+   <div class="grid3 g2">
+    <label><span data-en="Graphics">Grafik</span><select id="gq"><option value="2" data-en="High">Hoch</option><option value="1" data-en="Medium">Mittel</option><option value="0" data-en="Low (weak phones)">Niedrig (schwache Handys)</option></select></label>
+    <label><span data-en="Frame limit">FPS-Grenze</span><select id="fpsl"><option value="0" data-en="Unlimited">Unbegrenzt</option><option value="60">60</option><option value="30" data-en="30 (saves battery)">30 (spart Akku)</option></select></label>
+   </div>
+   <label class="chk"><input type="checkbox" id="sfps"> <span data-en="Show FPS in game">FPS im Spiel anzeigen</span></label>
+   <p class="hint" data-en="Medium: fewer particles. Low: also simpler floor, flat props instead of 3D models, no light glows at night and a sharper HUD at lower resolution. Use it if the game stutters.">Mittel: weniger Partikel. Niedrig: zusätzlich einfacher Boden, flache Deko statt 3D-Modelle, keine Lichtschein-Effekte in der Nacht und die Anzeige in niedrigerer Auflösung. Nimm das, wenn das Spiel ruckelt.</p>
+   <h3 data-en="Key bindings">Tastenbelegung</h3>
+   <p class="hint" data-en="Click an action, then press the new key. Esc cancels. The arrow keys always work as well.">Auf eine Aktion klicken, dann die neue Taste drücken. Esc bricht ab. Die Pfeiltasten gehen zusätzlich immer.</p>
+   <div id="kbl" class="kbl dyn"></div>
+   <div class="row"><button id="kbreset" class="ghost" data-en="Reset keys">Tasten zurücksetzen</button></div>
    <div class="ctl">
    <h3 data-en="Keyboard and mouse">Tastatur und Maus</h3>
    <p data-en="<kbd>WASD</kbd> move, mouse aim and look up/down, click shoot, right click aim down sights, <kbd>Q</kbd> ultimate, <kbd>Space</kbd> jump, <kbd>Shift</kbd> run, <kbd>1</kbd>–<kbd>9</kbd> or mouse wheel switch weapon, <kbd>Esc</kbd> menu, <kbd>M</kbd> minimap, <kbd>N</kbd> mute, <kbd>Enter</kbd> continue dialogue."><kbd>WASD</kbd> laufen, Maus zielen und hoch/runter schauen, Klick schießen, Rechtsklick zielen, <kbd>Q</kbd> Ulti, <kbd>Leertaste</kbd> springen, <kbd>Shift</kbd> rennen, <kbd>1</kbd>–<kbd>9</kbd> oder Mausrad Waffe wechseln, <kbd>Esc</kbd> Menü, <kbd>M</kbd> Minimap, <kbd>N</kbd> Ton aus, <kbd>Enter</kbd> Dialoge weiter.</p>
@@ -134,32 +146,35 @@
  <label><span data-en="Effects volume">Effekte</span><input type="range" id="pm-sv" min="0" max="100"></label>
  <label><span data-en="Music volume">Musik</span><input type="range" id="pm-mv" min="0" max="100"></label>
  <label><span data-en="Mouse and stick sensitivity">Maus- und Stick-Empfindlichkeit</span><input type="range" id="pm-se" min="30" max="250"></label>
+ <label><span><span data-en="Field of view">Blickfeld</span> <span id="pm-fovv" class="setv dyn">75°</span></span><input type="range" id="pm-fov" min="60" max="110"></label>
+ <label><span data-en="Graphics">Grafik</span><select id="pm-gq"><option value="2" data-en="High">Hoch</option><option value="1" data-en="Medium">Mittel</option><option value="0" data-en="Low (weak phones)">Niedrig (schwache Handys)</option></select></label>
  <div class="row"><button id="pm-map" class="dyn">Minimap: an</button><button id="pm-mute" class="dyn">Ton: an</button><button id="pm-fs" data-en="Fullscreen">Vollbild</button></div>
  <div class="row langrow"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
  <details><summary data-en="Controls">Steuerung</summary><div id="pm-ctl"></div></details>
  <button id="pm-quit" class="dyn">Zum Hauptmenü</button>
 </div></div>
-<script src="js/peerjs.min.js?v=202611250930"></script>
-<script src="js/lang.js?v=202611250930"></script>
-<script src="js/game.js?v=202611250930"></script>
-<script src="js/fx.js?v=202611250930"></script>
-<script src="js/hafen.js?v=202611250930"></script>
-<script src="js/birds.js?v=202611250930"></script>
-<script src="js/gungame.js?v=202611250930"></script>
-<script src="js/deco3d.js?v=202611250930"></script>
-<script src="js/vm.js?v=202611250930"></script>
-<script src="js/skins.js?v=202611250930"></script>
-<script src="js/story.js?v=202611250930"></script>
-<script src="js/ult.js?v=202611250930"></script>
-<script src="js/gore.js?v=202611250930"></script>
-<script src="js/screams.js?v=202611250930"></script>
-<script src="js/shop.js?v=202611250930"></script>
-<script src="js/firebase-config.js?v=202611250930"></script>
-<script src="js/account.js?v=202611250930"></script>
-<script src="js/menu.js?v=202611250930"></script>
-<script src="js/mappick.js?v=202611250930"></script>
-<script src="js/sandbox.js?v=202611250930"></script>
-<script src="js/touch.js?v=202611250930"></script>
-<script src="js/online.js?v=202611250930"></script>
-<script>boot();shopInit();mapPickInit();accInit()</script>
+<script src="js/peerjs.min.js?v=202611251015"></script>
+<script src="js/lang.js?v=202611251015"></script>
+<script src="js/game.js?v=202611251015"></script>
+<script src="js/fx.js?v=202611251015"></script>
+<script src="js/hafen.js?v=202611251015"></script>
+<script src="js/birds.js?v=202611251015"></script>
+<script src="js/gungame.js?v=202611251015"></script>
+<script src="js/deco3d.js?v=202611251015"></script>
+<script src="js/vm.js?v=202611251015"></script>
+<script src="js/skins.js?v=202611251015"></script>
+<script src="js/story.js?v=202611251015"></script>
+<script src="js/ult.js?v=202611251015"></script>
+<script src="js/gore.js?v=202611251015"></script>
+<script src="js/screams.js?v=202611251015"></script>
+<script src="js/shop.js?v=202611251015"></script>
+<script src="js/firebase-config.js?v=202611251015"></script>
+<script src="js/account.js?v=202611251015"></script>
+<script src="js/menu.js?v=202611251015"></script>
+<script src="js/mappick.js?v=202611251015"></script>
+<script src="js/sandbox.js?v=202611251015"></script>
+<script src="js/touch.js?v=202611251015"></script>
+<script src="js/settings.js?v=202611251015"></script>
+<script src="js/online.js?v=202611251015"></script>
+<script>boot();shopInit();mapPickInit();settingsInit();accInit()</script>
 </body></html>

@@ -81,7 +81,7 @@ function startStory(cont){
  mode=1;$('m').style.display='none';bgVol();try{const r=cv.requestPointerLock();if(r&&r.catch)r.catch(()=>{})}catch(e){}
 }
 function storyConfirm(){if(!mode)return;if(mode==1){if(story&&SS)SS.cf=1}else me.k=(me.k|0)+1}
-addEventListener('keydown',e=>{if(e.code=='Enter'||e.code=='Space')storyConfirm()});
+addEventListener('keydown',e=>{if(!KBW&&(e.code=='Enter'||e.code=='Space'||e.code==KB.jump))storyConfirm()});
 addEventListener('mousedown',()=>{if(mode&&S&&S.st&&S.st.ph!='play'&&S.st.ph!='clear'&&document.pointerLockElement===cv)storyConfirm()});
 
 // ================= ABLAUF (nur Host) =================

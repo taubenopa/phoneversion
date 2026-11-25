@@ -13,7 +13,7 @@ function menuInit(){
  // Einstellungen laden und speichern (Lautstaerke, Empfindlichkeit, Minimap)
  let st={};try{st=JSON.parse(localStorage.hfSet||'{}')||{}}catch(e){}
  if(st.sv!=null)$('sv').value=st.sv;if(st.mv!=null)$('mv').value=st.mv;if(st.se!=null)$('se').value=st.se;if(st.map===0)showMap=0;
- const save=()=>{try{localStorage.hfSet=JSON.stringify({sv:+$('sv').value,mv:+$('mv').value,se:+$('se').value,map:showMap?1:0})}catch(e){}};
+ const save=()=>{try{const o=JSON.parse(localStorage.hfSet||'{}')||{};localStorage.hfSet=JSON.stringify(Object.assign(o,{sv:+$('sv').value,mv:+$('mv').value,se:+$('se').value,map:showMap?1:0}))}catch(e){}};
  const vol=()=>{try{if(AC)mst.gain.value=$('sv').value/100*1.2}catch(e){}};
  $('sv').oninput=()=>{try{ac()}catch(e){}vol();save()};addEventListener('pointerdown',()=>setTimeout(vol,50));addEventListener('keydown',()=>setTimeout(vol,50));
  $('mv').oninput=()=>{bgVol();save()};bgVol();
@@ -36,7 +36,7 @@ function gameMenu(open,pad){
  if(!mode)return;if(open==null)open=!pmOpen;open=open?1:0;if(open==pmOpen||performance.now()-pmT<250)return;pmT=performance.now();
  pmOpen=open;$('pm').classList.toggle('on',!!open);me.f=0;me.ads=0;for(const k in ky)ky[k]=0;
  if(open){
-  for(const k of['sv','mv','se'])$('pm-'+k).value=$(k).value;pmLabels();quitArm=0;$('pm-quit').textContent='Zum Hauptmenü';$('pm-ctl').innerHTML=document.querySelector('.ctl').innerHTML;
+  for(const k of['sv','mv','se'])$('pm-'+k).value=$(k).value;pmLabels();if(typeof setSync=='function')setSync();quitArm=0;$('pm-quit').textContent='Zum Hauptmenü';$('pm-ctl').innerHTML=document.querySelector('.ctl').innerHTML;
   if(mode==1&&players.filter(p=>p.on).length<2&&!paused){paused=1;pmPaused=1}
   $('pm-note').textContent=mode==2?'Das Spiel läuft weiter. Karte und Schwierigkeit bestimmt der Host.':pmPaused?'Das Spiel ist pausiert.':'Das Spiel läuft weiter, weil Mitspieler verbunden sind.';
   PM.b=[0,0,0,0,1,1,1];try{if(document.pointerLockElement===cv)document.exitPointerLock()}catch(e){}
