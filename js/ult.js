@@ -18,7 +18,7 @@ const CDESC=[
  'Eine Farbbombe sprüht ein Graffiti auf den Boden. Gegner darin sind für immer blind und greifen nicht mehr an (Bosse nur 5 Sekunden).',
  'Wirft abwechselnd eins von zwei Bildern. Es explodiert riesig und tötet alle Gegner im Umkreis (Bosse verlieren ein gutes Drittel ihrer Leben).'];
 const ZN=[];let healFl=0;   // Zone k:7 = Graffiti (blendet)   // Zonen am Boden: Cola-Pfuetze (k:3), Steinhagel-Ziel (k:5)
-const isBoss=e=>e.t>=30||e.t==10||e.t==19;
+const isBoss=e=>bossT(e.t)||e.t==10||e.t==19;
 const vfx=(x0,y0,t,a,v,l)=>J.push({x:x0,y:y0,vx:Math.cos(a)*v,vy:Math.sin(a)*v,t,o:-2,l,vis:1});   // reines Effekt-Geschoss ohne Schaden
 function push(e,fx,fy,dist){const d=Math.hypot(e.x-fx,e.y-fy)||1,ux=(e.x-fx)/d,uy=(e.y-fy)/d,n=Math.ceil(dist/.2),sl=e.sl;e.sl=0;for(let k=0;k<n;k++)move(e,ux,uy,.2);e.sl=sl}
 function special(p){

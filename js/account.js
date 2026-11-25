@@ -2,7 +2,7 @@
 // und ist auf jedem Geraet gleich. Gespeichert: Coins, Waffen, Skins, Story-Stand, Rekord, Charakter, Name.
 // Ohne FB_CONFIG (js/firebase-config.js) bleibt alles wie vorher (nur lokal).
 const ACC={on:0,user:null,name:'',db:null,auth:null,last:'',busy:0,adm:0,unsub:null};
-const ACC_KEYS=['hfCoins','hfInv','hfSkins','hfSkinEq','hfStory','hfBest','hfCh'];
+const ACC_KEYS=['hfCoins','hfInv','hfSkins','hfSkinEq','hfStory','hfBest','hfCh','hfStats'];
 const accT=(de,en)=>typeof LANG!='undefined'&&LANG=='en'?en:de;
 const accMail=n=>n.toLowerCase()+'@taubengame.app';   // Benutzername wird intern zu einer E-Mail-Adresse
 function accSnap(){const o={};for(const k of ACC_KEYS){try{const v=localStorage[k];if(v!=null)o[k]=v}catch(e){}}return o}

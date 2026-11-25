@@ -5,21 +5,48 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null && request.auth.token.email in ['taube@taubengame.app'];
     }
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    // Gesperrte Spieler duerfen nichts Oeffentliches mehr schreiben
+    function notBanned(uid) {
+      let p = /databases/$(database)/documents/users/$(uid);
+      return exists(p) && get(p).data.get('banned', false) == false;
+    }
+
+    // Speicherstand: jeder nur seinen eigenen, der Admin alle
     match /users/{uid} {
-      // Jeder liest nur seinen eigenen Stand, der Admin alle
-      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow read: if isOwner(uid) || isAdmin();
       // Neuer Account: darf sich nicht selbst Sperr- oder Admin-Felder setzen
-      allow create: if request.auth != null && request.auth.uid == uid
+      allow create: if isOwner(uid)
                     && !('banned' in request.resource.data)
                     && !('banReason' in request.resource.data)
                     && !('adm' in request.resource.data);
-      // Spieler speichert nur, solange er nicht gesperrt ist, und darf Sperre/Admin-Zähler nicht ändern
-      allow update: if isAdmin() || (request.auth != null && request.auth.uid == uid
+      // Spieler speichert nur, solange er nicht gesperrt ist, und darf Sperre/Admin-Zaehler nicht aendern
+      allow update: if isAdmin() || (isOwner(uid)
                     && resource.data.get('banned', false) == false
                     && request.resource.data.get('banned', false) == false
                     && request.resource.data.get('banReason', '') == resource.data.get('banReason', '')
                     && request.resource.data.get('adm', 0) == resource.data.get('adm', 0));
       allow delete: if isAdmin();
+    }
+
+    // Bestenliste: alle duerfen lesen, jeder schreibt nur seinen eigenen Eintrag
+    match /board/{uid} {
+      allow read: if true;
+      allow create, update: if isOwner(uid) && notBanned(uid)
+                    && request.resource.data.keys().hasOnly(['name', 'k', 'd', 'gg', 't', 'wv', 'c', 'updated'])
+                    && request.resource.data.name is string && request.resource.data.name.size() <= 16;
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // Lobby-Liste: offene Spiele von eingeloggten Hosts
+    match /lobbies/{uid} {
+      allow read: if true;
+      allow create, update: if isOwner(uid) && notBanned(uid)
+                    && request.resource.data.keys().hasOnly(['code', 'name', 'md', 'mp', 'n', 'mx', 'updated'])
+                    && request.resource.data.code is string && request.resource.data.code.size() <= 12;
+      allow delete: if isOwner(uid) || isAdmin();
     }
   }
 }

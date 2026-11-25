@@ -48,6 +48,24 @@ Solange dort `null` steht, läuft das Spiel wie vorher ohne Accounts.
 Änderungen kommen beim Spieler sofort an, auch mitten im Spiel. Gesperrte Spieler werden sofort ausgeloggt.
 Wer Admin ist, steht in den Firestore-Regeln (`firestore.rules`).
 
+### Bestenliste und Statistik
+Menüpunkt **Bestenliste**: die besten Spieler mit Account nach Kills, bester Welle, Gun-Game-Siegen und Coins. Darunter die eigene Statistik (Kills, Tode, K/D, beste Welle, Gun-Game-Siege, Spielzeit).
+Kills und Tode zählen in jedem Modus außer Sandbox. Die Statistik wird mit dem Account gespeichert, die Bestenliste steht in Firestore unter `board`.
+
+### Lobby-Liste
+Unter **Beitreten** stehen alle offenen Spiele mit Host, Modus, Karte und Spielerzahl, Beitreten geht mit einem Klick. Der Raum-Code funktioniert weiter wie vorher.
+Ein Spiel taucht dort auf, wenn der Host eingeloggt ist und das Spiel nicht voll ist. Unter dem Raum-Code gibt es einen Schalter, um es auszublenden. Firestore: `lobbies`.
+Gesperrte Spieler verschwinden aus Bestenliste und Lobby-Liste.
+
+## Gun Game
+Unter „Koop & Deathmatch" den Modus **Gun Game** wählen. Jede Stufe hat eine feste Waffe, nach 2 Kills kommt die nächste (21 Stufen, vom Lasergewehr bis zur Pistole, dann Kreissäge und zum Schluss die Faust). Wer mit der Faust trifft, gewinnt, nach 7 Sekunden beginnt eine neue Runde.
+Allein gegen endlos nachkommende Gegner, online als Wettrennen gegen die Mitspieler (rechts steht, wer auf welcher Stufe ist). Munition ist unendlich, Waffen wechseln geht nicht. Wer stirbt, verliert die Kills der aktuellen Stufe.
+Die Reihenfolge steht oben in `js/gungame.js` (`GGL`).
+
+## Fliegende Tauben
+Ab Welle 2 kommen im Koop und in Gun Game **Tauben**. Sie kreisen über dir, kacken von oben (Schaden und das Bild ist kurz verschmiert) und stoßen ab und zu herab, um zu picken. Treffen kann man sie nur, wenn man hochzielt.
+In Welle 10 kommt der Boss **Riesentaube**: Kackregen, ruft kleine Tauben, wird unter halber Energie wütend. Beide gibt es auch in der Sandbox. Code: `js/birds.js`.
+
 ## Sandbox
 Unter „Koop & Deathmatch" den Modus **Sandbox (frei spielen)** wählen. Keine Wellen, alle Waffen sind freigeschaltet.
 Mit **B** (Controller: Select, Handy: Knopf SANDBOX) öffnen sich die Werkzeuge: einzelne Gegner (die drei Typen aus dem Story-Modus, werwlf, EuroJunkie, Adam, YoungCola), 5 oder 15 zufällige und jeden Boss spawnen, Unverwundbar, volle Munition, Ulti ohne Wartezeit, Gegner einfrieren, alle töten oder entfernen, heilen.
@@ -159,6 +177,9 @@ js/gore.js            Treffer- und Todes-Effekte (Blut, Umfallen, Zerplatzen, Bl
 js/screams.js         Todesschreie und Schmerzlaute der Gegner (assets/sfx/scream1-5, pain1-3)
 js/deco3d.js          Echte 3D-Modelle für Autos, Container, Zäune, Poller, Tische usw. und Hitboxen für alle Deko
 js/account.js         Accounts (Firebase): Einloggen, Fortschritt online speichern
+js/online.js          Statistik, Bestenliste und Lobby-Liste (Firebase)
+js/gungame.js         Gun-Game-Modus
+js/birds.js           Fliegende Tauben und Boss Riesentaube
 js/firebase-config.js Firebase-Zugangsdaten (null = ohne Accounts)
 js/sandbox.js         Sandbox-Modus (frei spielen, Gegner/Bosse spawnen, Unverwundbar usw.)
 js/mappick.js         Kartenauswahl mit Vorschaubildern (Bilder in assets/maps)

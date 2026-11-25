@@ -218,3 +218,23 @@ body:not(.inmenu) #ver{display:none}
 .acc-in{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);background:#120d0c;max-width:420px}
 .acc-in b{font-size:18px;color:var(--gold)}.acc-in span{font-size:12px;color:var(--dim)}
 #accb.in{color:var(--gold)}
+
+/* Bestenliste */
+.btabs{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 10px}
+.btabs button{all:unset;cursor:pointer;padding:6px 12px;font:700 12px var(--mono);color:var(--dim);border:1px solid var(--line);background:#120d0c}
+.btabs button:hover{color:var(--ash)}.btabs button.on{color:#1a0f08;background:var(--gold);border-color:var(--gold)}
+.blist{list-style:none;margin:0;padding:0;max-width:440px}
+.blist li{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid #2a1f1a;font-size:14px}
+.blist li:nth-child(1) .rk{color:var(--gold)}.blist li:nth-child(2) .rk{color:#d8d8d8}.blist li:nth-child(3) .rk{color:#d08a4a}
+.blist .rk{font:800 15px var(--mono);color:var(--dim)}.blist b{color:var(--ash);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.blist .v{font:800 15px var(--mono);color:var(--gold)}
+.blist li.me{background:linear-gradient(90deg,rgba(255,90,31,.22),transparent);border-left:3px solid var(--ember)}
+.bstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:440px}
+.bstats div{background:#120d0c;border:1px solid var(--line);padding:8px 10px}
+.bstats b{display:block;font:800 18px var(--mono);color:var(--gold)}.bstats span{font-size:11px;color:var(--dim)}
+/* Lobby-Liste */
+.lobs{list-style:none;margin:0 0 6px;padding:0;max-width:480px}
+.lobs li{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-left:3px solid var(--ember);background:#120d0c;margin-bottom:5px}
+.lobs b{display:block;color:var(--ash);font-size:15px}.lobs span{font-size:11.5px;color:var(--dim)}
+.lobs .pc{font:800 14px var(--mono);color:var(--gold)}
+.lobsw{margin:6px 0 2px;font-size:12px}.lobsw .chk{display:flex;gap:7px;align-items:center;color:var(--dim);cursor:pointer}

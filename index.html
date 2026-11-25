@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>TAUBENGAME</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="stylesheet" href="css/style.css?v=202611231230"></head><body>
+<link rel="stylesheet" href="css/style.css?v=202611250930"></head><body>
 <div id="attcap"><small data-en="Preview">Vorschau</small><b></b></div>
 <canvas id="cv"></canvas>
 <div id="m">
@@ -36,8 +36,9 @@
   <nav id="nav">
    <button data-go="story"><b data-en="Story mode">Story-Modus</b><i data-en="Up to 4 against Slimee Rebel">Mit bis zu 4 gegen Slimee Rebel</i></button>
    <button data-go="host"><b data-en="Co-op &amp; deathmatch">Koop &amp; Deathmatch</b><i data-en="Waves and bosses, alone or with friends">Wellen und Bosse, allein oder mit Freunden</i></button>
-   <button data-go="join"><b data-en="Join">Beitreten</b><i data-en="Enter the host's room code">Raum-Code vom Host eingeben</i></button>
+   <button data-go="join"><b data-en="Join">Beitreten</b><i data-en="Open games or room code">Offene Spiele oder Raum-Code</i></button>
    <button data-go="guns"><b data-en="Case shop">Case-Shop</b><i id="ls" class="dyn">Coins</i></button>
+   <button data-go="board"><b data-en="Leaderboard">Bestenliste</b><i data-en="Kills, waves, Gun Game wins">Kills, Wellen, Gun-Game-Siege</i></button>
    <button data-go="acc"><b data-en="Account">Account</b><i class="dyn"><span id="accb">Gast</span></i></button>
    <button data-go="opts"><b data-en="Settings">Einstellungen</b><i data-en="Volume, language, controls">Lautstärke, Sprache, Steuerung</i></button>
   </nav>
@@ -50,7 +51,7 @@
   <section class="pane" id="p-story">
    <h2 data-en="Story mode">Story-Modus</h2>
    <p class="lead" data-en="Slimee Rebel wants the Insta account Lifestylecrazy back. Six levels, six bosses, and he's the last one.">Slimee Rebel will den Insta-Account Lifestylecrazy zurück. Sechs Level, sechs Bosse, am Ende er selbst.</p>
-   <h3 data-en="Room code for your squad">Raum-Code für dein Squad</h3><div class="code" id="hc2">...</div>
+   <h3 data-en="Room code for your squad">Raum-Code für dein Squad</h3><div class="code" id="hc2">...</div><div id="lobsw2" class="lobsw dyn"></div>
    <p id="pl2" class="hint dyn"></p>
    <h3 data-en="Your character">Dein Charakter</h3><div class="chars dyn" id="cg"></div>
    <div class="grid3"><label><span data-en="Difficulty">Schwierigkeit</span><select id="sdf"><option value="0" data-en="Easy">Leicht</option><option value="1" selected>Normal</option><option value="2" data-en="Hard">Hart</option></select></label></div>
@@ -59,8 +60,8 @@
   </section>
   <section class="pane" id="p-host">
    <h2 data-en="Co-op &amp; deathmatch">Koop &amp; Deathmatch</h2>
-   <p class="lead" data-en="A boss shows up every 5 waves: Lil M, Drachenlord, SehrJamal, Jermaine, Raphael, Jxhn2K, Slimee Rebel.">Alle 5 Wellen kommt ein Boss: Lil M, Drachenlord, SehrJamal, Jermaine, Raphael, Jxhn2K, Slimee Rebel.</p>
-   <h3 data-en="Room code for other players">Raum-Code für Mitspieler</h3><div class="code" id="hc">...</div>
+   <p class="lead" data-en="A boss shows up every 5 waves: Lil M, Giant Pigeon, Drachenlord, SehrJamal, Jermaine, Raphael, Jxhn2K, Slimee Rebel.">Alle 5 Wellen kommt ein Boss: Lil M, Riesentaube, Drachenlord, SehrJamal, Jermaine, Raphael, Jxhn2K, Slimee Rebel.</p>
+   <h3 data-en="Room code for other players">Raum-Code für Mitspieler</h3><div class="code" id="hc">...</div><div id="lobsw" class="lobsw dyn"></div>
    <p id="pl" class="hint dyn"></p>
    <h3 data-en="Your character">Dein Charakter</h3><div class="chars dyn" id="cg3"></div>
    <h3 data-en="Map">Karte</h3>
@@ -68,7 +69,7 @@
    <div class="grid3 g2">
     
     <label><span data-en="Difficulty">Schwierigkeit</span><select id="df"><option value="0" data-en="Easy">Leicht</option><option value="1" selected>Normal</option><option value="2" data-en="Hard">Hart</option></select></label>
-    <label><span data-en="Mode">Modus</span><select id="gm"><option value="0" data-en="Co-op">Koop</option><option value="1" data-en="Deathmatch (2+)">Deathmatch (ab 2)</option><option value="2" data-en="Sandbox (free play)">Sandbox (frei spielen)</option></select></label></div>
+    <label><span data-en="Mode">Modus</span><select id="gm"><option value="0" data-en="Co-op">Koop</option><option value="1" data-en="Deathmatch (2+)">Deathmatch (ab 2)</option><option value="3" data-en="Gun Game">Gun Game</option><option value="2" data-en="Sandbox (free play)">Sandbox (frei spielen)</option></select></label></div>
    <div class="row"><button class="pri big" onclick="startGame()" data-en="Start game">Spiel starten</button></div>
    <details><summary data-en="Connect without internet (manual codes)">Ohne Internet verbinden (manuelle Codes)</summary><div><button onclick="invite()" data-en="Invite player">Mitspieler einladen</button>
     <p data-en="1. Send this code to the other player:">1. Diesen Code an den Mitspieler schicken:</p><textarea id="oc" readonly></textarea>
@@ -77,7 +78,9 @@
   </section>
   <section class="pane" id="p-join">
    <h2 data-en="Join">Beitreten</h2>
-   <h3 data-en="Room code from the host">Raum-Code vom Host</h3>
+   <h3 data-en="Open games">Offene Spiele</h3>
+   <div id="lobbies" class="dyn"></div>
+   <h3 data-en="Or enter a room code">Oder Raum-Code eingeben</h3>
    <div class="row joinrow"><input id="jc" maxlength="12" placeholder="ABCD"><button class="pri" onclick="joinCode()" data-en="Connect">Verbinden</button></div><p id="js2" class="hint dyn"></p>
    <h3 data-en="Your character">Dein Charakter</h3><div class="chars dyn" id="cg2"></div>
    <details><summary data-en="Connect without internet (manual codes)">Ohne Internet verbinden (manuelle Codes)</summary><div><p data-en="1. Paste the host's code:">1. Code vom Host einfügen:</p><textarea id="ic"></textarea>
@@ -95,6 +98,11 @@
    <div id="inv" class="dyn"></div>
    <div id="skp" class="dyn"></div>
    <p class="hint" data-en="Story mode stays the same: you start with the pistol and get weapons from the case opening after every level. Every character also has an ultimate on Q.">Im Story-Modus bleibt alles wie gehabt: Du startest mit der Pistole und bekommst Waffen über das Case Opening nach jedem Level. Jeder Charakter hat zusätzlich eine Ulti auf Q.</p>
+  </section>
+  <section class="pane" id="p-board">
+   <h2 data-en="Leaderboard">Bestenliste</h2>
+   <p class="lead" data-en="The best players with an account. Your numbers count in every mode except sandbox.">Die besten Spieler mit Account. Deine Zahlen zählen in jedem Modus außer Sandbox.</p>
+   <div id="board" class="dyn"></div>
   </section>
   <section class="pane" id="p-acc">
    <h2 data-en="Account">Account</h2>
@@ -131,24 +139,27 @@
  <details><summary data-en="Controls">Steuerung</summary><div id="pm-ctl"></div></details>
  <button id="pm-quit" class="dyn">Zum Hauptmenü</button>
 </div></div>
-<script src="js/peerjs.min.js?v=202611231230"></script>
-<script src="js/lang.js?v=202611231230"></script>
-<script src="js/game.js?v=202611231230"></script>
-<script src="js/fx.js?v=202611231230"></script>
-<script src="js/hafen.js?v=202611231230"></script>
-<script src="js/deco3d.js?v=202611231230"></script>
-<script src="js/vm.js?v=202611231230"></script>
-<script src="js/skins.js?v=202611231230"></script>
-<script src="js/story.js?v=202611231230"></script>
-<script src="js/ult.js?v=202611231230"></script>
-<script src="js/gore.js?v=202611231230"></script>
-<script src="js/screams.js?v=202611231230"></script>
-<script src="js/shop.js?v=202611231230"></script>
-<script src="js/firebase-config.js?v=202611231230"></script>
-<script src="js/account.js?v=202611231230"></script>
-<script src="js/menu.js?v=202611231230"></script>
-<script src="js/mappick.js?v=202611231230"></script>
-<script src="js/sandbox.js?v=202611231230"></script>
-<script src="js/touch.js?v=202611231230"></script>
+<script src="js/peerjs.min.js?v=202611250930"></script>
+<script src="js/lang.js?v=202611250930"></script>
+<script src="js/game.js?v=202611250930"></script>
+<script src="js/fx.js?v=202611250930"></script>
+<script src="js/hafen.js?v=202611250930"></script>
+<script src="js/birds.js?v=202611250930"></script>
+<script src="js/gungame.js?v=202611250930"></script>
+<script src="js/deco3d.js?v=202611250930"></script>
+<script src="js/vm.js?v=202611250930"></script>
+<script src="js/skins.js?v=202611250930"></script>
+<script src="js/story.js?v=202611250930"></script>
+<script src="js/ult.js?v=202611250930"></script>
+<script src="js/gore.js?v=202611250930"></script>
+<script src="js/screams.js?v=202611250930"></script>
+<script src="js/shop.js?v=202611250930"></script>
+<script src="js/firebase-config.js?v=202611250930"></script>
+<script src="js/account.js?v=202611250930"></script>
+<script src="js/menu.js?v=202611250930"></script>
+<script src="js/mappick.js?v=202611250930"></script>
+<script src="js/sandbox.js?v=202611250930"></script>
+<script src="js/touch.js?v=202611250930"></script>
+<script src="js/online.js?v=202611250930"></script>
 <script>boot();shopInit();mapPickInit();accInit()</script>
 </body></html>

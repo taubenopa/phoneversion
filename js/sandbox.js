@@ -3,7 +3,7 @@
 // Coins und Rekorde gibt es in der Sandbox nicht.
 var SBX=0,sbOpen=0;
 const SB={god:1,ammo:1,ult:1,freeze:0,slow:0};
-const SBE=[[20,'Typ mit Maske','Masked guy'],[21,'Kräftiger Typ','Big guy'],[22,'Schneller Typ','Fast guy'],[13,'werwlf','werwlf'],[14,'EuroJunkie','EuroJunkie'],[16,'Adam','Adam'],[17,'YoungCola','YoungCola']];
+const SBE=[[20,'Typ mit Maske','Masked guy'],[21,'Kräftiger Typ','Big guy'],[22,'Schneller Typ','Fast guy'],[13,'werwlf','werwlf'],[14,'EuroJunkie','EuroJunkie'],[16,'Adam','Adam'],[17,'YoungCola','YoungCola'],[90,'Taube','Pigeon']];
 // Wird jedes Bild vom Host aufgerufen
 function sbTick(dt){const all=ALLW;
  for(const p of players){if(!p.on&&p.i!==0)continue;p.lo=all;if(SB.ammo&&p.am)for(let w=1;w<WP.length;w++)p.am[w]=MX[w]||p.am[w];if(SB.ult)p.qc=0}

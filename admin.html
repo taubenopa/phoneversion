@@ -112,7 +112,7 @@ function edit(id){const v=U.find(x=>x.id==id);if(!v)return;sel=id;const ed=$('ed
   s.hfCoins=String(Math.max(0,Math.floor(+$('ec').value||0)));s.hfInv=String(mask|3);s.hfBest=String(Math.max(0,+$('eb').value||0));
   if(clearSkins){s.hfSkins='{}';s.hfSkinEq='{}'}const lv=+$('st').value;if(!lv)delete s.hfStory;else{let o={};try{o=JSON.parse(s.hfStory||'{}')||{}}catch(e){}o.lv=lv;o.ck=o.ck||1;o.lo=o.lo||3;o.coins=o.coins||0;s.hfStory=JSON.stringify(o)}
   await put(v,{save:s},'Gespeichert. Der Spieler bekommt es sofort, auch wenn er gerade spielt.')};
- if($('bb'))$('bb').onclick=async()=>{if(!confirm(v.name+' wirklich sperren?'))return;await put(v,{banned:true,banReason:$('br').value.trim()||null},'Gesperrt. Er wird sofort ausgeloggt.')};
+ if($('bb'))$('bb').onclick=async()=>{if(!confirm(v.name+' wirklich sperren?'))return;await put(v,{banned:true,banReason:$('br').value.trim()||null},'Gesperrt. Er wird sofort ausgeloggt und verschwindet aus Bestenliste und Lobby-Liste.');try{await db.collection('board').doc(v.id).delete();await db.collection('lobbies').doc(v.id).delete()}catch(e){}};
  if($('ub'))$('ub').onclick=()=>put(v,{banned:false,banReason:null},'Entsperrt.');
  $('rs').onclick=async()=>{if(!confirm('Fortschritt von '+v.name+' komplett zurücksetzen (Coins 50, nur Start-Waffen, keine Skins, kein Story-Stand)?'))return;await put(v,{save:{hfCoins:'50',hfInv:'3',hfSkins:'{}',hfSkinEq:'{}'}},'Zurückgesetzt.')}}
 async function put(v,data,ok){const m=$('sm');m.className='msg';m.textContent='Speichere …';

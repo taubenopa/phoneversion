@@ -19,13 +19,13 @@ function goreImg(t){if(IMG[t])return IMG[t];if(GIMG[t])return GIMG[t];const T=ST
 // Wird beim Aktualisieren der Partikel aufgerufen, wenn ein Tropfen den Boden erreicht
 function bloodLand(q){if(q.bl==1){q.bl=2;if(Math.random()<.45)decal(q.x,q.y,.025+Math.random()*.05,.8)}}
 // Treffer am Gegner (neuer Treffer erkannt ueber e.hn)
-function goreHit(e,q,f,now){const ha=e.ha!=null?e.ha:Math.atan2(q.y-me.y,q.x-me.x),big=e.t>=30||e.t==10||e.t==19;
+function goreHit(e,q,f,now){if(ST[e.t]&&ST[e.t].bird){birdHit(e,q,f,now);return}const ha=e.ha!=null?e.ha:Math.atan2(q.y-me.y,q.x-me.x),big=bossT(e.t)||e.t==10||e.t==19;
  f.ht=now;f.ha=ha;spray(q.x,q.y,.55,ha,big?12:9,1.6);if(typeof painSnd=='function')painSnd(q.x,q.y,e.t);
  for(let k=0;k<4&&WPT.length<600;k++)WPT.push({x:q.x,y:q.y,z:.55,vx:Math.cos(ha+Math.PI+(Math.random()-.5))*.6,vy:Math.sin(ha+Math.PI+(Math.random()-.5))*.6,vz:.6,g:5,l:.25,m:.3,c:'#ff4a3a',s:.05});
  if(Math.random()<.5)decal(q.x+Math.cos(ha)*(.3+Math.random()*.4),q.y+Math.sin(ha)*(.3+Math.random()*.4),.06+Math.random()*.06)}
 // Tod: Art waehlen und Leiche / Stuecke erzeugen
-function goreDeath(e,q,now){
- const I=goreImg(e.t),T=ST[e.t],ka=e.ka!=null?e.ka:Math.atan2(q.y-me.y,q.x-me.x),boss=e.t>=30||e.t==10||e.t==19;
+function goreDeath(e,q,now){if(ST[e.t]&&ST[e.t].bird){birdDeath(e,q,now);return}
+ const I=goreImg(e.t),T=ST[e.t],ka=e.ka!=null?e.ka:Math.atan2(q.y-me.y,q.x-me.x),boss=bossT(e.t)||e.t==10||e.t==19;
  const style=boss?'boss':((e.ov||0)>=35||(e.kd||0)>=60||e.kx)?'gib':((e.id*7)%3==0?'crumple':'back');
  spray(q.x,q.y,.5,ka,boss?50:style=='gib'?40:22,boss?2.4:style=='gib'?3:2);if(typeof deathSnd=='function')deathSnd(q.x,q.y,style,boss,e.t);
  if(style=='gib'&&I&&T){gibs(e,q,I,T,ka);for(let k=0;k<7;k++)decal(q.x+Math.cos(ka+(Math.random()-.5)*2)*Math.random()*1.4,q.y+Math.sin(ka+(Math.random()-.5)*2)*Math.random()*1.4,.08+Math.random()*.14);pool(q.x,q.y,.5);shk=Math.max(shk,1.5);return}
